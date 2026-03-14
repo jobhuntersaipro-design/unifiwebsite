@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Check, Wifi, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star } from "lucide-react";
 
 const WHATSAPP_NUMBER = "601169497969";
@@ -212,7 +212,7 @@ function BundleCard({
 }
 
 /* ── Plan Card ─────────────────────────────────────────────────── */
-function PlanCard({ plan }: { plan: Plan }) {
+function PlanCard({ plan, innerRef }: { plan: Plan; innerRef?: React.Ref<HTMLDivElement> }) {
     const [bundleOpen, setBundleOpen] = useState(false);
     const [selectedBundle, setSelectedBundle] = useState<string | null>(null);
 
@@ -224,6 +224,7 @@ function PlanCard({ plan }: { plan: Plan }) {
 
     return (
         <div
+            ref={innerRef}
             id={plan.id}
             style={{
                 position: "relative",
@@ -286,16 +287,24 @@ function PlanCard({ plan }: { plan: Plan }) {
                     {plan.name}
                 </h3>
 
-                {plan.wasPrice && (
-                    <div style={{ marginBottom: "2px" }}>
+                {/* Original Price Strikethrough (Or Invisible exact copy to force perfect height alignment) */}
+                <div style={{ marginBottom: "4px" }}>
+                    {plan.wasPrice ? (
                         <span style={{
-                            fontFamily: "Roboto, sans-serif", fontSize: "12px",
-                            color: "#aaa", textDecoration: "line-through",
+                            fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 600,
+                            color: "#a0a0a0", textDecoration: "line-through",
                         }}>
                             RM{plan.wasPrice}
                         </span>
-                    </div>
-                )}
+                    ) : (
+                        <span style={{
+                            fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 600,
+                            visibility: "hidden",
+                        }}>
+                            RM000
+                        </span>
+                    )}
+                </div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
                     <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "13px", color: plan.color }}>RM</span>
                     <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 900, fontSize: "2.4rem", color: plan.color, lineHeight: 1 }}>
@@ -479,12 +488,11 @@ export default function PersonalTab() {
                         style={{ padding: "8px 0 20px" }}
                     >
                         {plans.map((plan, index) => (
-                            <div 
-                                key={plan.id}
-                                ref={index === 0 ? firstCardRef : index === plans.length - 1 ? lastCardRef : null}
-                            >
-                                <PlanCard plan={plan} />
-                            </div>
+                            <PlanCard 
+                                key={plan.id} 
+                                plan={plan} 
+                                innerRef={index === 0 ? firstCardRef : index === plans.length - 1 ? lastCardRef : undefined}
+                            />
                         ))}
                     </div>
 
