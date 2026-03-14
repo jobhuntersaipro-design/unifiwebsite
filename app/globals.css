@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap');
+@import "tailwindcss";
+
+/* WhatsApp floating button pulse animation */
+@keyframes wa-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.14); }
+}
+
+#whatsapp-float {
+  animation: wa-pulse 2.4s ease-in-out infinite;
+}
+#whatsapp-float:hover {
+  animation-play-state: paused;
+  transform: scale(1.15) !important;
+}
+
+:root {
+  --cobalt-blue: #1800E7;
+  --cobalt-blue-dark: #1200b0;
+  --navy-blue: #180092;
+  --dark-blue: #060013A;
+  --orange: #FF7A00;
+  --accent-orange: #FF5E00;
+  --light-orange: #F78986;
+  --white: #FFFFFF;
+  --black: #000000;
+  --light-blue: #9986FF;
+  --gray-light: #f5f5f5;
+  --gray-border: #e5e5e5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--white);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+}
+
+/* Unifi brand stripe pattern */
+.brand-stripe {
+  background: repeating-linear-gradient(-45deg,
+      var(--cobalt-blue) 0px,
+      var(--cobalt-blue) 8px,
+      var(--orange) 8px,
+      var(--orange) 16px);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--cobalt-blue);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--cobalt-blue-dark);
+  transform: translateY(-1px);
+}
+
+.btn-orange {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--orange);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-orange:hover {
+  background-color: var(--accent-orange);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--cobalt-blue);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 11px 23px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 2px solid var(--cobalt-blue);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: var(--cobalt-blue);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.btn-outline-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 11px 23px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-outline-white:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--white);
+  transform: translateY(-1px);
+}
+
+.section-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+/* ── Responsive layout helpers ─────────────────────────────── */
+
+/* Plan grids */
+.plans-grid {
+  display: flex !important;
+  flex-direction: row !important;
+  overflow-x: auto !important;
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch;
+  gap: 20px !important;
+  padding: 8px 16px 20px !important;
+  margin: 0 -16px;
+  scrollbar-width: none;
+  align-items: flex-start !important; /* each card is only as tall as its own content */
+}
+.plans-grid::-webkit-scrollbar {
+  display: none;
+}
+.plans-grid > * {
+  min-width: 320px !important;
+  max-width: 320px !important;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Navbar */
+.desktop-nav {
+  display: flex;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+/* Footer grid */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+}
+
+/* Hero CTA row */
+.hero-cta-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Contact grid */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+/* Air biz grid */
+.airbiz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+  justify-content: center;
+  gap: 24px;
+}
+
+/* Why choose us grid */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Device card in promo banner */
+.device-card-promo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 10px 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,122,0,0.25);
+  border-radius: 16px;
+  transition: background 0.2s, transform 0.2s;
+  cursor: default;
+}
+.device-card-promo:hover {
+  background: rgba(255,122,0,0.10);
+  border-color: rgba(255,122,0,0.7);
+  transform: translateY(-3px);
+}
+
+/* Promo banner responsive */
+.promo-banner-grid {
+  grid-template-columns: 360px 1fr;
+}
+
+/* Plans scroll wrapper + arrow buttons */
+.plans-scroll-wrapper {
+  position: relative;
+  display: block; /* Removed flex so absolute pos works cleaner relative to full width container */
+  width: 100%;
+}
+
+.plans-scroll-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  color: var(--cobalt-blue);
+  border: 1.5px solid #eaeaea;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+.plans-scroll-btn:hover { 
+  opacity: 1; 
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  transform: translateY(-50%) scale(1.05);
+  background: #f8f8f8;
+}
+/* Move arrows to overlap the edges of the cards */
+.plans-scroll-prev { left: 4px; }
+.plans-scroll-next { right: 4px; }
+
+/* ── Mobile breakpoints ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px;
+  }
+
+  .plans-grid > * {
+    min-width: 82vw !important;
+    max-width: 82vw !important;
+  }
+
+  .plans-scroll-btn {
+    display: none !important;
+  }
+
+  .airbiz-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px !important;
+    padding: 8px 16px 20px !important;
+    margin: 0 -16px;
+    scrollbar-width: none;
+  }
+  .airbiz-grid::-webkit-scrollbar {
+    display: none;
+  }
+  .airbiz-grid > * {
+    min-width: 82vw !important;
+    max-width: 82vw !important;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .why-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Contact grid: stay 3-col but reduce padding and font */
+  .contact-grid a {
+    padding: 18px 8px !important;
+  }
+  .contact-grid a p:nth-child(3) {
+    font-size: 11px !important;
+  }
+  .contact-grid a p:nth-child(4) {
+    display: none;
+  }
+  .contact-grid a > div {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .hero-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-cta-row a {
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Promo banner: stack vertically, center orange section */
+  .promo-banner-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .promo-left-panel {
+    align-items: center !important;
+    text-align: center !important;
+    padding: 36px 28px !important;
+  }
+  .promo-left-panel > div { align-items: center !important; }
+  .promo-banner-grid .device-card-promo {
+    padding: 14px 6px 12px !important;
+  }
+  .promo-banner-grid .device-card-promo > div {
+    width: 70px !important;
+    height: 70px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .plans-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
