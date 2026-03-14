@@ -35,7 +35,7 @@ const contacts = [
         label: "Email",
         value: "Send us an email",
         sub: "We'll get back to you",
-        href: "mailto:info@yourreseller.com",
+        href: "mailto:hello@unifi.co.com",
         bg: "var(--orange)",
         hoverBg: "var(--accent-orange)",
         external: false,
