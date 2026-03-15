@@ -1,15 +1,33 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 const WHATSAPP_NUMBER = "601169497969";
 const WHATSAPP_MSG = encodeURIComponent("Hi, I'm interested in a Unifi plan. Can you help me?");
 const PHONE_NUMBER = "+60164609428";
 
 export default function MobileCtaBar() {
+    const [visible, setVisible] = useState(true);
+    const lastScrollY = useRef(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentY = window.scrollY;
+            setVisible(currentY <= lastScrollY.current || currentY < 10);
+            lastScrollY.current = currentY;
+        };
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
         <>
             <style>{`
                 @media (min-width: 769px) {
                     #mobile-cta-bar { display: none !important; }
+                }
+                #mobile-cta-bar {
+                    transition: transform 0.3s ease;
                 }
             `}</style>
             <div
@@ -26,6 +44,8 @@ export default function MobileCtaBar() {
                     display: "flex",
                     gap: "10px",
                     boxShadow: "0 -4px 24px rgba(0,0,0,0.1)",
+                    transform: visible ? "translateY(0)" : "translateY(100%)",
+                    transition: "transform 0.3s ease",
                 }}
             >
                 {/* Call button */}
