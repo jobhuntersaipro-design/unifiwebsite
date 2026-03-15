@@ -1,7 +1,12 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { Check, Wifi, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star } from "lucide-react";
+import React, { useState } from "react";
+import { Check, Wifi, ChevronDown, ChevronUp, Star } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import CheckCoverageButton from "@/components/CoverageModal";
 
 const WHATSAPP_NUMBER = "601169497969";
 
@@ -59,7 +64,7 @@ const plans: Plan[] = [
         name: "UniVerse 100",
         speed: "100", unit: "Mbps",
         price: "89", wasPrice: "99",
-        promo: "3 Months Free",
+        promo: "6 Months Free",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["100Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -73,7 +78,7 @@ const plans: Plan[] = [
         name: "UniVerse 300",
         speed: "300", unit: "Mbps",
         price: "129", wasPrice: "139",
-        promo: "3 Months Free",
+        promo: "6 Months Free",
         color: POPULAR_COLOR, lightBg: POPULAR_LIGHT_BG, border: POPULAR_BORDER,
         popular: true,
         includes: ["300Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -88,7 +93,7 @@ const plans: Plan[] = [
         name: "UniVerse 500",
         speed: "500", unit: "Mbps",
         price: "149", wasPrice: "159",
-        promo: "3 Months Free",
+        promo: "6 Months Free",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["500Mbps / 100Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -102,7 +107,7 @@ const plans: Plan[] = [
         name: "UniVerse 1Gbps",
         speed: "1", unit: "Gbps",
         price: "249", wasPrice: "289",
-        promo: "3 Months Free",
+        promo: "",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["1Gbps / 500Mbps", "Wi-Fi 7 Combo Box + Mesh", "12-hr priority service restoration"],
@@ -116,7 +121,7 @@ const plans: Plan[] = [
         name: "UniVerse 2Gbps",
         speed: "2", unit: "Gbps",
         price: "319", wasPrice: null,
-        promo: "3 Months Free",
+        promo: "",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["2Gbps / 1Gbps", "Wi-Fi 7 Combo Box + Mesh", "12-hr priority service restoration"],
@@ -135,7 +140,7 @@ function BundleCard({
 }) {
     return (
         <div
-            onClick={onToggle}
+            onClick={(e) => { e.stopPropagation(); onToggle(); }}
             style={{
                 border: selected ? `2px solid ${planColor}` : "1.5px solid #e0e0e0",
                 borderRadius: "10px",
@@ -212,7 +217,7 @@ function BundleCard({
 }
 
 /* ── Plan Card ─────────────────────────────────────────────────── */
-function PlanCard({ plan, innerRef }: { plan: Plan; innerRef?: React.Ref<HTMLDivElement> }) {
+function PlanCard({ plan }: { plan: Plan }) {
     const [bundleOpen, setBundleOpen] = useState(false);
     const [selectedBundle, setSelectedBundle] = useState<string | null>(null);
 
@@ -224,7 +229,6 @@ function PlanCard({ plan, innerRef }: { plan: Plan; innerRef?: React.Ref<HTMLDiv
 
     return (
         <div
-            ref={innerRef}
             id={plan.id}
             style={{
                 position: "relative",
@@ -313,15 +317,17 @@ function PlanCard({ plan, innerRef }: { plan: Plan; innerRef?: React.Ref<HTMLDiv
                     <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "13px", color: "#888" }}>/mth</span>
                 </div>
 
-                {/* 3 Months Free pill — shown on ALL plans */}
-                <div style={{
-                    marginTop: "8px", display: "inline-block",
-                    background: "rgba(255,122,0,0.1)", color: "var(--accent-orange)",
-                    fontFamily: "Inter, sans-serif", fontWeight: 700,
-                    fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
-                }}>
-                    {plan.promo}
-                </div>
+                {/* Free months promo pill — only shown when promo is set */}
+                {plan.promo && (
+                    <div style={{
+                        marginTop: "8px", display: "inline-block",
+                        background: "rgba(255,122,0,0.1)", color: "var(--accent-orange)",
+                        fontFamily: "Inter, sans-serif", fontWeight: 700,
+                        fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
+                    }}>
+                        {plan.promo}
+                    </div>
+                )}
             </div>
 
             {/* Features */}
@@ -343,7 +349,7 @@ function PlanCard({ plan, innerRef }: { plan: Plan; innerRef?: React.Ref<HTMLDiv
             <div style={{ padding: "0 20px 14px" }}>
                 {/* Toggle */}
                 <button
-                    onClick={() => setBundleOpen((o) => !o)}
+                    onClick={(e) => { e.stopPropagation(); setBundleOpen((o) => !o); }}
                     style={{
                         display: "flex", alignItems: "center", gap: "7px",
                         background: "none", border: "none", padding: "4px 0 10px",
@@ -406,47 +412,6 @@ function PlanCard({ plan, innerRef }: { plan: Plan; innerRef?: React.Ref<HTMLDiv
 }
 
 export default function PersonalTab() {
-    const gridRef = useRef<HTMLDivElement>(null);
-    const firstCardRef = useRef<HTMLDivElement>(null);
-    const lastCardRef = useRef<HTMLDivElement>(null);
-    const [isAtStart, setIsAtStart] = useState(true);
-    const [isAtEnd, setIsAtEnd] = useState(false);
-
-    // Use Intersection Observer for rock-solid scroll boundary detection
-    // that doesn't break due to trackpad overscroll (rubber-banding) or flex gaps
-    useEffect(() => {
-        const root = gridRef.current;
-        const first = firstCardRef.current;
-        const last = lastCardRef.current;
-        
-        if (!root || !first || !last) return;
-
-        const observerOptions = {
-            root: root,
-            rootMargin: "0px",
-            threshold: 0.95 // Requires 95% of card to be visible to be considered "at start/end"
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.target === first) setIsAtStart(entry.isIntersecting);
-                if (entry.target === last) setIsAtEnd(entry.isIntersecting);
-            });
-        }, observerOptions);
-
-        observer.observe(first);
-        observer.observe(last);
-
-        return () => observer.disconnect();
-    }, []);
-
-    const scroll = (dir: "prev" | "next") => {
-        if (!gridRef.current) return;
-        const first = gridRef.current.firstElementChild as HTMLElement | null;
-        const cardWidth = first ? first.offsetWidth + 14 : 300;
-        gridRef.current.scrollBy({ left: dir === "next" ? cardWidth : -cardWidth, behavior: "smooth" });
-    };
-
     return (
         <section id="plans" style={{ padding: "64px 0 80px", background: "#fafbff" }}>
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
@@ -474,58 +439,42 @@ export default function PersonalTab() {
                         fontSize: "15px", padding: "9px 22px", borderRadius: "24px",
                         letterSpacing: "0.01em",
                     }}>
-                        ✦ Exclusive promo — 3 Months FREE on every plans
+                        ✦ Exclusive promo — 6 Months FREE on selected plans
                     </div>
                 </div>
-            </div>
 
-            {/* Plans scroll area */}
-            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
-                <div className="plans-scroll-wrapper">
-                    <div
-                        className="plans-grid"
-                        ref={gridRef}
-                        style={{ padding: "8px 0 20px" }}
-                    >
-                        {plans.map((plan, index) => (
-                            <PlanCard 
-                                key={plan.id} 
-                                plan={plan} 
-                                innerRef={index === 0 ? firstCardRef : index === plans.length - 1 ? lastCardRef : undefined}
-                            />
-                        ))}
-                    </div>
+                {/* Swiper slider */}
+                <Swiper
+                    modules={[Pagination]}
+                    pagination={{ clickable: true }}
+                    spaceBetween={16}
+                    slidesPerView={1.2}
+                    initialSlide={1}
+                    onClick={(swiper) => swiper.slideNext()}
+                    breakpoints={{
+                        640:  { slidesPerView: 2.1, spaceBetween: 20 },
+                        1024: { slidesPerView: 3.2, spaceBetween: 24 },
+                        1280: { slidesPerView: 4,   spaceBetween: 24 },
+                        1400: { slidesPerView: 5,   spaceBetween: 24 },
+                    }}
+                    className="plans-swiper"
+                    style={{ paddingBottom: "52px", paddingTop: "8px" } as React.CSSProperties}
+                >
+                    {plans.map((plan) => (
+                        <SwiperSlide key={plan.id}>
+                            <PlanCard plan={plan} />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
 
-                    {/* Nav arrows — absolutely positioned via CSS (left/right edges) */}
-                    {!isAtStart && (
-                        <button
-                            className="plans-scroll-btn plans-scroll-prev"
-                            onClick={() => scroll("prev")}
-                            aria-label="Previous plan"
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                    )}
-                    {!isAtEnd && (
-                        <button
-                            className="plans-scroll-btn plans-scroll-next"
-                            onClick={() => scroll("next")}
-                            aria-label="Next plan"
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
                 <p style={{
-                    textAlign: "center", marginTop: "28px",
+                    textAlign: "center", marginTop: "8px",
                     fontFamily: "Roboto, sans-serif", fontWeight: 400,
                     fontSize: "13px", color: "#888",
                 }}>
                     All plans support optional TV packs, UNI5G Mobile add-ons &amp; lifestyle device bundles. Contact us to customise.
                 </p>
+                <CheckCoverageButton />
             </div>
         </section>
     );

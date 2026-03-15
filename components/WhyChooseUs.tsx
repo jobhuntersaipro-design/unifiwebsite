@@ -87,6 +87,7 @@ export default function WhyChooseUs() {
                             <div
                                 key={reason.id}
                                 id={reason.id}
+                                className="why-card"
                                 style={{
                                     background: "#fff",
                                     borderRadius: "20px",
@@ -224,6 +225,7 @@ export default function WhyChooseUs() {
 
                     {/* RIGHT — white with device cards */}
                     <div
+                        className="promo-right-panel"
                         style={{
                             background: "#fff",
                             padding: "40px 44px 40px 36px",

@@ -1,6 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap');
 @import "tailwindcss";
 
+/* ── Swiper plan slider ─────────────────────────────────────── */
+.plans-swiper {
+  overflow: hidden;
+}
+.plans-swiper .swiper-slide {
+  height: auto;
+}
+@media (min-width: 640px) {
+  .plans-swiper {
+    overflow: visible;
+  }
+}
+/* Pagination dots */
+.plans-swiper .swiper-pagination-bullet {
+  background: #c0c8ff;
+  opacity: 1;
+  width: 7px;
+  height: 7px;
+}
+.plans-swiper .swiper-pagination-bullet-active {
+  background: var(--orange);
+  width: 20px;
+  border-radius: 4px;
+  transition: width 0.25s ease;
+}
+
 /* WhatsApp floating button pulse animation */
 @keyframes wa-pulse {
   0%, 100% { transform: scale(1); }
@@ -299,6 +325,11 @@ h3 {
     gap: 32px;
   }
 
+  /* Contact section: tighter vertical padding on mobile */
+  #contact {
+    padding: 48px 16px 56px !important;
+  }
+
   .plans-grid > * {
     min-width: 82vw !important;
     max-width: 82vw !important;
@@ -329,25 +360,45 @@ h3 {
     flex-shrink: 0;
   }
 
-  .why-grid {
-    grid-template-columns: 1fr !important;
+  /* WhyChooseUs section */
+  #why-choose-us {
+    padding: 48px 16px 56px !important;
   }
 
-  /* Contact grid: stay 3-col but reduce padding and font */
-  .contact-grid a {
-    padding: 18px 8px !important;
+  .why-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
   }
-  .contact-grid a p:nth-child(3) {
-    font-size: 11px !important;
+
+  .why-card {
+    padding: 24px 20px !important;
   }
-  .contact-grid a p:nth-child(4) {
-    display: none;
+
+  /* Contact grid: single column, horizontal cards */
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
-  .contact-grid a > div {
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 12px !important;
-    margin-bottom: 10px !important;
+  .contact-card {
+    flex-direction: row !important;
+    text-align: left !important;
+    align-items: center !important;
+    padding: 20px !important;
+    gap: 16px;
+  }
+  .contact-icon {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 14px !important;
+    margin-bottom: 0 !important;
+  }
+  .contact-card-text {
+    flex: 1;
+  }
+  .contact-badge {
+    top: 12px !important;
+    right: 12px !important;
+    font-size: 9px !important;
   }
 
   .hero-cta-row {
@@ -367,15 +418,30 @@ h3 {
   .promo-left-panel {
     align-items: center !important;
     text-align: center !important;
-    padding: 36px 28px !important;
+    padding: 32px 24px !important;
   }
   .promo-left-panel > div { align-items: center !important; }
+
+  /* Right panel: tighter padding and a 3-col device grid that fits */
+  .promo-right-panel {
+    padding: 24px 16px !important;
+  }
+  .promo-right-panel > div {
+    gap: 8px !important;
+  }
   .promo-banner-grid .device-card-promo {
-    padding: 14px 6px 12px !important;
+    padding: 12px 4px 10px !important;
   }
   .promo-banner-grid .device-card-promo > div {
-    width: 70px !important;
-    height: 70px !important;
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .promo-banner-grid .device-card-promo span:first-of-type {
+    font-size: 12px !important;
+  }
+  .promo-banner-grid .device-card-promo span:last-of-type {
+    font-size: 11px !important;
+    padding: 3px 8px !important;
   }
 }
 
@@ -400,5 +466,17 @@ h3 {
 
   .mobile-menu-btn {
     display: flex !important;
+  }
+}
+
+/* ── Mobile sticky CTA bar — add bottom padding so content isn't hidden ── */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 72px;
+  }
+
+  /* Hide the floating WhatsApp pill on mobile — sticky bar handles it */
+  #whatsapp-float {
+    display: none !important;
   }
 }

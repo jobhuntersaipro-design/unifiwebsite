@@ -1,428 +1,321 @@
 "use client";
 
-import { Check, Wifi, Zap, Star } from "lucide-react";
+import React from "react";
+import { Check, Wifi, Star } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import CheckCoverageButton from "@/components/CoverageModal";
 
 const WHATSAPP_NUMBER = "601169497969";
 
-// ─── Business Broadband Plans ────────────────────────────────────────────────
-const fibrePlans = [
+const PLAN_COLOR = "var(--cobalt-blue)";
+const PLAN_LIGHT_BG = "#f0f2ff";
+const PLAN_BORDER = "#dde2ff";
+const POPULAR_COLOR = "var(--orange)";
+const POPULAR_LIGHT_BG = "#fff5ed";
+const POPULAR_BORDER = "#ffd9b8";
+
+type BizPlan = {
+    id: string;
+    name: string;
+    speed: string;
+    unit: string;
+    price: string;
+    wasPrice: string | null;
+    badge: string | null;
+    color: string;
+    lightBg: string;
+    border: string;
+    popular: boolean;
+    includes: string[];
+    msg: string;
+};
+
+const plans: BizPlan[] = [
     {
         id: "biz-100",
-        speed: "100Mbps",
-        label: "Best Value",
-        price: "129",
-        wasPrice: "139",
+        name: "Business 100Mbps",
+        speed: "100", unit: "Mbps",
+        price: "99", wasPrice: "129",
+        badge: null,
+        color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
-        users: "2–3 users / 5 devices",
-        type: "Flexible Micro Office",
-        router: "Wi-Fi 6 Combo Box",
-        mesh: "—",
-        backup: "Add on RM30/mth",
-        restoration: "24 hours",
-        svp: "SVP50",
-        msg: "Hi, I'm interested in Unifi Business Broadband 100Mbps (RM129/mth). Can you help?",
+        includes: [
+            "100Mbps / 50Mbps upload",
+            "Wi-Fi 5 Certified Router",
+            "FREE Business Call Plan (worth RM50)",
+            "Add-on Mesh Wi-Fi from RM15/mth",
+        ],
+        msg: "Hi, I'm interested in the Unifi Business Broadband 100Mbps (RM99/mth) plan. Can you help?",
     },
     {
         id: "biz-300",
-        speed: "300Mbps",
-        label: "Most Popular",
-        price: "199",
-        wasPrice: "249",
+        name: "Business 300Mbps",
+        speed: "300", unit: "Mbps",
+        price: "139", wasPrice: "199",
+        badge: "BEST SELLER",
+        color: POPULAR_COLOR, lightBg: POPULAR_LIGHT_BG, border: POPULAR_BORDER,
         popular: true,
-        users: "6 users / 10 devices",
-        type: "Small Outlet / NGO Office",
-        router: "Wi-Fi 6 Combo Box",
-        mesh: "Wi-Fi 6 Mesh",
-        backup: "Add on RM30/mth",
-        restoration: "24 hours",
-        svp: "SVP50",
-        msg: "Hi, I'm interested in Unifi Business Broadband 300Mbps (RM199/mth). Can you help?",
+        includes: [
+            "300Mbps / 50Mbps upload",
+            "Wi-Fi 6 Certified Router + Mesh",
+            "FREE Business Call Plan (worth RM50)",
+        ],
+        msg: "Hi, I'm interested in the Unifi Business Broadband 300Mbps (RM139/mth) plan. Can you help?",
     },
     {
         id: "biz-500",
-        speed: "500Mbps",
-        label: "Best for Productivity",
-        price: "239",
-        wasPrice: "299",
+        name: "Business 500Mbps",
+        speed: "500", unit: "Mbps",
+        price: "179", wasPrice: "239",
+        badge: null,
+        color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
-        users: "10 heavy users",
-        type: "Virtual Office / Shop",
-        router: "Wi-Fi 6 Combo Box",
-        mesh: "Wi-Fi 6 Mesh",
-        backup: "Add on RM30/mth",
-        restoration: "24 hours",
-        svp: "SVP70",
-        msg: "Hi, I'm interested in Unifi Business Broadband 500Mbps (RM239/mth). Can you help?",
+        includes: [
+            "500Mbps / 100Mbps upload",
+            "Wi-Fi 6 Certified Router + Mesh",
+            "FREE Business Call Plan (worth RM50)",
+        ],
+        msg: "Hi, I'm interested in the Unifi Business Broadband 500Mbps (RM179/mth) plan. Can you help?",
+    },
+    {
+        id: "biz-800",
+        name: "Business 800Mbps",
+        speed: "800", unit: "Mbps",
+        price: "259", wasPrice: "349",
+        badge: null,
+        color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
+        popular: false,
+        includes: [
+            "800Mbps / 200Mbps upload",
+            "Wi-Fi 6 Certified Router + Mesh",
+            "FREE Business Call Plan (worth RM70)",
+        ],
+        msg: "Hi, I'm interested in the Unifi Business Broadband 800Mbps (RM259/mth) plan. Can you help?",
     },
     {
         id: "biz-1gbps",
-        speed: "1Gbps",
-        label: "High Performance",
-        price: "319",
-        wasPrice: null,
+        name: "Business 1Gbps",
+        speed: "1", unit: "Gbps",
+        price: "319", wasPrice: "419",
+        badge: "BEST VALUE",
+        color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
-        users: "10 power users",
-        type: "Larger Business Premise",
-        router: "Wi-Fi 7 Combo Box",
-        mesh: "Wi-Fi 7 Mesh",
-        backup: "FREE",
-        restoration: "12 business hours",
-        svp: "SVP70",
-        msg: "Hi, I'm interested in Unifi Business Broadband 1Gbps (RM319/mth). Can you help?",
+        includes: [
+            "1Gbps / 500Mbps upload",
+            "Wi-Fi 6 Optical Network Router & Mesh",
+            "FREE Business Call Plan (worth RM70)",
+            "ULTRA CREW included",
+        ],
+        msg: "Hi, I'm interested in the Unifi Business Broadband 1Gbps (RM319/mth) plan. Can you help?",
     },
     {
         id: "biz-2gbps",
-        speed: "2Gbps",
-        label: "Ultimate Power",
-        price: "369",
-        wasPrice: null,
+        name: "Business 2Gbps",
+        speed: "2", unit: "Gbps",
+        price: "369", wasPrice: "469",
+        badge: null,
+        color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
-        users: "10+ power users",
-        type: "Larger Business Premise",
-        router: "Wi-Fi 7 Combo Box",
-        mesh: "Wi-Fi 7 Mesh",
-        backup: "FREE",
-        restoration: "12 business hours",
-        svp: "SVP70",
-        msg: "Hi, I'm interested in Unifi Business Broadband 2Gbps (RM369/mth). Can you help?",
+        includes: [
+            "2Gbps / 1Gbps upload (Aggregated)",
+            "Wi-Fi 6 Optical Network Router & Mesh",
+            "FREE Business Call Plan (worth RM70)",
+            "ULTRA CREW included",
+        ],
+        msg: "Hi, I'm interested in the Unifi Business Broadband 2Gbps (RM369/mth) plan. Can you help?",
     },
 ];
 
-// ─── Unifi Air Biz Plans ─────────────────────────────────────────────────────
-const airPlans = [
-    {
-        id: "air-99",
-        name: "Unifi Air Biz 5G 99",
-        price: "99",
-        popular: false,
-        data: "Unlimited 5G Data",
-        dataNote: "Fair Usage Policy (FUP applies)",
-        devices: "Up to 5 devices",
-        device: "FREE 5G Router (Wi-Fi 6) or Mi-Fi",
-        upfront: "RM99",
-        contract: "24 months (with device) / No contract (SIM only)",
-        msg: "Hi, I'm interested in Unifi Air Biz 5G 99 (RM99/mth). Can you help?",
-    },
-    {
-        id: "air-149",
-        name: "Unifi Air Biz 5G 149",
-        price: "149",
-        popular: true,
-        data: "Unlimited 5G Data",
-        dataNote: "No data caps — enjoy high-speed internet",
-        devices: "Up to 10 devices",
-        device: "FREE 5G Router (Wi-Fi 6)",
-        upfront: "RM149",
-        contract: "24 months (with device) / No contract (SIM only)",
-        msg: "Hi, I'm interested in Unifi Air Biz 5G 149 (RM149/mth). Can you help?",
-    },
-];
+function PlanCard({ plan }: { plan: BizPlan }) {
+    return (
+        <div
+            id={plan.id}
+            style={{
+                position: "relative",
+                background: "#fff",
+                border: `2px solid ${plan.popular ? plan.color : plan.border}`,
+                borderRadius: "20px",
+                overflow: "hidden",
+                boxShadow: plan.popular
+                    ? "0 8px 32px rgba(255,122,0,0.18)"
+                    : "0 2px 12px rgba(0,0,0,0.05)",
+                display: "flex", flexDirection: "column",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+            }}
+            onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.transform = "translateY(-6px)";
+                el.style.boxShadow = "0 20px 48px rgba(0,0,0,0.12)";
+            }}
+            onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.transform = "translateY(0)";
+                el.style.boxShadow = plan.popular
+                    ? "0 8px 32px rgba(255,122,0,0.18)"
+                    : "0 2px 12px rgba(0,0,0,0.05)";
+            }}
+        >
+            {/* Badge bar */}
+            {plan.badge && (
+                <div style={{
+                    background: plan.color, color: "white",
+                    fontFamily: "Inter, sans-serif", fontWeight: 700,
+                    fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase",
+                    textAlign: "center", padding: "6px",
+                }}>
+                    <Star size={11} style={{ display: "inline", marginRight: "4px", marginBottom: "-1px" }} />
+                    {plan.badge}
+                </div>
+            )}
 
-// ─── Shared styles ────────────────────────────────────────────────────────────
-const BLUE = "var(--cobalt-blue)";
-const POPULAR_ORANGE = "var(--orange)";
-const AIR_PURPLE = "#7c3aed";
-const ORANGE = "var(--orange)";
+            {/* Card header */}
+            <div style={{
+                backgroundColor: plan.lightBg, padding: "24px 20px 16px",
+                borderBottom: `1px solid ${plan.border}`,
+            }}>
+                <div style={{
+                    display: "inline-flex", alignItems: "center", gap: "5px",
+                    background: plan.color, color: "white",
+                    borderRadius: "6px", padding: "3px 10px", marginBottom: "12px",
+                }}>
+                    <Wifi size={12} />
+                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "11px" }}>
+                        {plan.speed} {plan.unit}
+                    </span>
+                </div>
+
+                <h3 style={{
+                    fontFamily: "Inter, sans-serif", fontWeight: 900,
+                    fontSize: "1rem", color: "#111", marginBottom: "12px",
+                }}>
+                    {plan.name}
+                </h3>
+
+                {/* Strikethrough placeholder keeps height consistent */}
+                <div style={{ marginBottom: "4px" }}>
+                    {plan.wasPrice ? (
+                        <span style={{
+                            fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 600,
+                            color: "#a0a0a0", textDecoration: "line-through",
+                        }}>
+                            RM{plan.wasPrice}
+                        </span>
+                    ) : (
+                        <span style={{
+                            fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 600,
+                            visibility: "hidden",
+                        }}>
+                            RM000
+                        </span>
+                    )}
+                </div>
+
+                <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
+                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "13px", color: plan.color }}>RM</span>
+                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 900, fontSize: "2.4rem", color: plan.color, lineHeight: 1 }}>
+                        {plan.price}
+                    </span>
+                    <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "13px", color: "#888" }}>/mth</span>
+                </div>
+            </div>
+
+            {/* Features */}
+            <div style={{ padding: "16px 20px", flex: 1 }}>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "9px" }}>
+                    {plan.includes.map((item) => (
+                        <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                            <Check size={13} style={{ color: plan.color, marginTop: "2px", flexShrink: 0 }} />
+                            <span style={{
+                                fontFamily: "Roboto, sans-serif", fontWeight: 400,
+                                fontSize: "12.5px", color: "#444", lineHeight: 1.5,
+                            }}>{item}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* CTA */}
+            <div style={{ padding: "0 20px 20px" }}>
+                <a
+                    id={`${plan.id}-enquire`}
+                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(plan.msg)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        width: "100%", backgroundColor: plan.color, color: "white",
+                        fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "13px",
+                        padding: "11px 0", borderRadius: "10px",
+                        textDecoration: "none", transition: "opacity 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.85")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
+                >
+                    Register Now
+                </a>
+            </div>
+        </div>
+    );
+}
 
 export default function BusinessTab() {
     return (
-        <section id="plans" style={{ padding: "64px 24px 80px", background: "#fafbff" }}>
-            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-
-                {/* ── Section 1: Business Broadband ── */}
-                <div style={{ textAlign: "center", marginBottom: "40px" }}>
-                    <span className="section-label">Business Fibre Broadband</span>
+        <section id="plans" style={{ padding: "64px 0 80px", background: "#fafbff" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
+                {/* Header */}
+                <div style={{ textAlign: "center", marginBottom: "48px" }}>
+                    <span className="section-label">Business Plans</span>
                     <h2 style={{
                         fontFamily: "Inter, sans-serif", fontWeight: 900,
-                        fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: BLUE,
-                        marginTop: "10px", marginBottom: "10px",
+                        fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "var(--cobalt-blue)",
+                        marginTop: "10px", marginBottom: "12px",
                     }}>
                         Unifi Business Broadband
                     </h2>
                     <p style={{
                         fontFamily: "Roboto, sans-serif", fontWeight: 300,
-                        fontSize: "1.05rem", color: "#555", maxWidth: "540px",
+                        fontSize: "1.05rem", color: "#555", maxWidth: "520px",
                         margin: "0 auto", lineHeight: 1.7,
                     }}>
                         Ultra-fast fibre up to 2Gbps. All plans include a FREE Business Call Plan (SVP) and FREE DECT Phone.
                     </p>
                 </div>
 
-                {/* Fibre plan cards */}
-                <div className="plans-grid">
-                    {fibrePlans.map((plan) => (
-                        <div
-                            key={plan.id}
-                            id={plan.id}
-                            style={{
-                                position: "relative",
-                                background: "#fff",
-                                border: `2px solid ${plan.popular ? POPULAR_ORANGE : "#dde2ff"}`,
-                                borderRadius: "18px", overflow: "hidden",
-                                boxShadow: plan.popular ? "0 8px 32px rgba(255,122,0,0.18)" : "0 2px 10px rgba(0,0,0,0.05)",
-                                display: "flex", flexDirection: "column",
-                                transition: "transform 0.22s ease, box-shadow 0.22s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                const el = e.currentTarget as HTMLDivElement;
-                                el.style.transform = "translateY(-6px)";
-                                el.style.boxShadow = "0 18px 44px rgba(0,0,0,0.12)";
-                            }}
-                            onMouseLeave={(e) => {
-                                const el = e.currentTarget as HTMLDivElement;
-                                el.style.transform = "translateY(0)";
-                                el.style.boxShadow = plan.popular ? "0 8px 32px rgba(255,122,0,0.18)" : "0 2px 10px rgba(0,0,0,0.05)";
-                            }}
-                        >
-                            {plan.popular && (
-                                <div style={{
-                                    background: POPULAR_ORANGE, color: "white", textAlign: "center",
-                                    fontFamily: "Inter, sans-serif", fontWeight: 700,
-                                    fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase", padding: "5px",
-                                }}>
-                                    <Star size={10} style={{ display: "inline", marginRight: "3px", marginBottom: "-1px" }} />
-                                    {plan.label}
-                                </div>
-                            )}
-
-                            {/* Header */}
-                            <div style={{
-                                background: plan.popular ? "#fff5ed" : "#f8f9ff",
-                                padding: "20px 18px 14px",
-                                borderBottom: `1px solid ${plan.popular ? "#ffd9b8" : "#dde2ff"}`,
-                            }}>
-                                <div style={{
-                                    display: "inline-flex", alignItems: "center", gap: "5px",
-                                    background: plan.popular ? POPULAR_ORANGE : BLUE, color: "white",
-                                    borderRadius: "6px", padding: "3px 9px", marginBottom: "10px",
-                                }}>
-                                    <Wifi size={11} />
-                                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "13px" }}>{plan.speed}</span>
-                                </div>
-
-                                {!plan.popular && (
-                                    <p style={{
-                                        fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "11px",
-                                        color: "#888", marginBottom: "6px",
-                                    }}>{plan.label}</p>
-                                )}
-
-                                <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
-                                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "12px", color: plan.popular ? POPULAR_ORANGE : BLUE }}>RM</span>
-                                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 900, fontSize: "2.2rem", color: plan.popular ? POPULAR_ORANGE : BLUE, lineHeight: 1 }}>{plan.price}</span>
-                                    <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "12px", color: "#888" }}>/mth</span>
-                                </div>
-                                {plan.wasPrice && (
-                                    <p style={{ fontFamily: "Roboto, sans-serif", fontSize: "11px", color: "#bbb", textDecoration: "line-through", marginTop: "2px" }}>
-                                        Was RM{plan.wasPrice}/mth
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Details */}
-                            <div style={{ padding: "14px 18px", flex: 1 }}>
-                                {[
-                                    { label: "Users", value: plan.users },
-                                    { label: "Router", value: plan.router },
-                                    { label: "Mesh WiFi", value: plan.mesh },
-                                    { label: "5G Backup", value: plan.backup },
-                                    { label: "Restoration", value: plan.restoration },
-                                    { label: "Free Call Plan", value: plan.svp },
-                                ].map((row) => (
-                                    <div key={row.label} style={{
-                                        display: "flex", justifyContent: "space-between", gap: "8px",
-                                        padding: "6px 0", borderBottom: "1px solid #f0f0f0",
-                                    }}>
-                                        <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "11.5px", color: "#888", flexShrink: 0 }}>{row.label}</span>
-                                        <span style={{
-                                            fontFamily: "Roboto, sans-serif", fontWeight: 500, fontSize: "11.5px",
-                                            color: row.value === "FREE" ? "#16a34a" : "#222", textAlign: "right",
-                                        }}>{row.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* CTA */}
-                            <div style={{ padding: "14px 18px" }}>
-                                <a
-                                    id={`${plan.id}-enquire`}
-                                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(plan.msg)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        display: "flex", alignItems: "center", justifyContent: "center",
-                                        gap: "6px", width: "100%",
-                                        backgroundColor: plan.popular ? POPULAR_ORANGE : BLUE, color: "white",
-                                        fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "12px",
-                                        padding: "10px 0", borderRadius: "9px",
-                                        textDecoration: "none", transition: "opacity 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.85")}
-                                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
-                                >
-                                    Register Now
-                                </a>
-                            </div>
-                        </div>
+                {/* Swiper slider */}
+                <Swiper
+                    modules={[Pagination]}
+                    pagination={{ clickable: true }}
+                    spaceBetween={16}
+                    slidesPerView={1.2}
+                    initialSlide={1}
+                    onClick={(swiper) => swiper.slideNext()}
+                    breakpoints={{
+                        640:  { slidesPerView: 2.1, spaceBetween: 20 },
+                        1024: { slidesPerView: 3.2, spaceBetween: 24 },
+                        1280: { slidesPerView: 4,   spaceBetween: 24 },
+                        1400: { slidesPerView: 5,   spaceBetween: 24 },
+                    }}
+                    className="plans-swiper"
+                    style={{ paddingBottom: "52px", paddingTop: "8px" } as React.CSSProperties}
+                >
+                    {plans.map((plan) => (
+                        <SwiperSlide key={plan.id}>
+                            <PlanCard plan={plan} />
+                        </SwiperSlide>
                     ))}
-                </div>
-
-                {/* ── Divider ── */}
-                <div style={{
-                    display: "flex", alignItems: "center", gap: "16px", marginBottom: "52px", marginTop: "30px"
-                }}>
-                    <div style={{ flex: 1, height: "1px", background: "#e0e4ff" }} />
-                    <span style={{
-                        fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "11px",
-                        letterSpacing: "0.12em", textTransform: "uppercase", color: "#aaa",
-                    }}>Or choose wireless</span>
-                    <div style={{ flex: 1, height: "1px", background: "#e0e4ff" }} />
-                </div>
-
-                {/* ── Section 2: Unifi Air Biz ── */}
-                <div style={{ textAlign: "center", marginBottom: "36px" }}>
-                    <span className="section-label" style={{ color: ORANGE }}>Wireless Broadband</span>
-                    <h2 style={{
-                        fontFamily: "Inter, sans-serif", fontWeight: 900,
-                        fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)", color: "#111",
-                        marginTop: "10px", marginBottom: "10px",
-                    }}>
-                        Unifi Air Biz
-                    </h2>
-                    <p style={{
-                        fontFamily: "Roboto, sans-serif", fontWeight: 300,
-                        fontSize: "1rem", color: "#555", maxWidth: "500px",
-                        margin: "0 auto", lineHeight: 1.7,
-                    }}>
-                        No cables, no installation required. Plug and play 5G internet with a FREE router from day one.
-                    </p>
-                </div>
-
-                {/* Air Biz plan cards — centred, wider */}
-                <div className="airbiz-grid">
-                    {airPlans.map((plan) => (
-                        <div
-                            key={plan.id}
-                            id={plan.id}
-                            style={{
-                                position: "relative",
-                                background: "#fff",
-                                border: `2px solid ${plan.popular ? AIR_PURPLE : "#e8e0ff"}`,
-                                borderRadius: "20px", overflow: "hidden",
-                                boxShadow: plan.popular ? "0 8px 32px rgba(124,58,237,0.18)" : "0 2px 12px rgba(0,0,0,0.05)",
-                                display: "flex", flexDirection: "column",
-                                transition: "transform 0.22s ease, box-shadow 0.22s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                const el = e.currentTarget as HTMLDivElement;
-                                el.style.transform = "translateY(-6px)";
-                                el.style.boxShadow = "0 20px 48px rgba(0,0,0,0.1)";
-                            }}
-                            onMouseLeave={(e) => {
-                                const el = e.currentTarget as HTMLDivElement;
-                                el.style.transform = "translateY(0)";
-                                el.style.boxShadow = plan.popular ? "0 8px 32px rgba(124,58,237,0.18)" : "0 2px 12px rgba(0,0,0,0.05)";
-                            }}
-                        >
-                            {plan.popular && (
-                                <div style={{
-                                    background: AIR_PURPLE, color: "white", textAlign: "center",
-                                    fontFamily: "Inter, sans-serif", fontWeight: 700,
-                                    fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", padding: "6px",
-                                }}>
-                                    <Star size={10} style={{ display: "inline", marginRight: "4px", marginBottom: "-1px" }} />
-                                    Recommended
-                                </div>
-                            )}
-
-                            {/* Header */}
-                            <div style={{
-                                background: plan.popular ? "#f5f0ff" : "#faf8ff",
-                                padding: "28px 28px 20px",
-                                borderBottom: `1px solid ${plan.popular ? "#ddd0ff" : "#e8e0ff"}`,
-                            }}>
-                                <div style={{
-                                    display: "inline-flex", alignItems: "center", gap: "6px",
-                                    background: AIR_PURPLE, color: "white",
-                                    borderRadius: "8px", padding: "4px 12px", marginBottom: "14px",
-                                }}>
-                                    <Zap size={13} />
-                                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "12px" }}>5G Wireless</span>
-                                </div>
-
-                                <h3 style={{
-                                    fontFamily: "Inter, sans-serif", fontWeight: 900,
-                                    fontSize: "1.1rem", color: "#111", marginBottom: "14px",
-                                }}>{plan.name}</h3>
-
-                                <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
-                                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "13px", color: AIR_PURPLE }}>RM</span>
-                                    <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 900, fontSize: "2.8rem", color: AIR_PURPLE, lineHeight: 1 }}>{plan.price}</span>
-                                    <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "13px", color: "#888" }}>/mth</span>
-                                </div>
-                                <p style={{ fontFamily: "Roboto, sans-serif", fontSize: "11px", color: "#aaa", marginTop: "4px" }}>
-                                    Upfront payment: {plan.upfront}
-                                </p>
-                            </div>
-
-                            {/* Features */}
-                            <div style={{ padding: "20px 28px", flex: 1 }}>
-                                {[
-                                    { icon: "📡", label: plan.data, sub: plan.dataNote },
-                                    { icon: "📱", label: `Connectivity: ${plan.devices}` },
-                                    { icon: "📦", label: plan.device },
-                                    { icon: "📄", label: plan.contract },
-                                ].map((item, i) => (
-                                    <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "12px", alignItems: "flex-start" }}>
-                                        <span style={{ fontSize: "14px", flexShrink: 0 }}>{item.icon}</span>
-                                        <div>
-                                            <p style={{
-                                                fontFamily: "Roboto, sans-serif", fontWeight: 500,
-                                                fontSize: "13px", color: "#222", lineHeight: 1.4,
-                                            }}>{item.label}</p>
-                                            {item.sub && (
-                                                <p style={{
-                                                    fontFamily: "Roboto, sans-serif", fontWeight: 400,
-                                                    fontSize: "11.5px", color: "#888", marginTop: "2px",
-                                                }}>{item.sub}</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* CTA */}
-                            <div style={{ padding: "16px 28px" }}>
-                                <a
-                                    id={`${plan.id}-enquire`}
-                                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(plan.msg)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        display: "flex", alignItems: "center", justifyContent: "center",
-                                        gap: "8px", width: "100%",
-                                        backgroundColor: AIR_PURPLE, color: "white",
-                                        fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "14px",
-                                        padding: "13px 0", borderRadius: "10px",
-                                        textDecoration: "none", transition: "opacity 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.85")}
-                                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
-                                >
-                                    Register Now
-                                </a>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                </Swiper>
 
                 <p style={{
-                    textAlign: "center", marginTop: "24px",
+                    textAlign: "center", marginTop: "8px",
                     fontFamily: "Roboto, sans-serif", fontWeight: 400,
-                    fontSize: "12px", color: "#aaa",
+                    fontSize: "13px", color: "#888",
                 }}>
-                    All plans subject to 24-month contract when bundled with a free device. SIM-only plans available with no contract commitment.
+                    *Add-on Mesh Wi-Fi for 100Mbps plans from as low as RM15/month. Terms and conditions apply.
                 </p>
+                <CheckCoverageButton />
             </div>
         </section>
     );

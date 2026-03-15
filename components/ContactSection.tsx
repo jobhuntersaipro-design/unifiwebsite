@@ -67,7 +67,8 @@ export default function ContactSection() {
                             marginBottom: "14px",
                         }}
                     >
-                        Ready to sign up? We&#39;re here to help.
+                        Sign Up Today —{" "}
+                        <span style={{ color: "var(--orange)" }}>We Reply Fast.</span>
                     </h2>
                     <p
                         style={{
@@ -80,91 +81,106 @@ export default function ContactSection() {
                             lineHeight: 1.7,
                         }}
                     >
-                        Reach out and one of our Unifi specialists will guide you to the best plan for your needs.
+                        WhatsApp us now and our Unifi specialist will get your line set up — usually same week.
                     </p>
                 </div>
 
                 {/* Contact cards */}
                 <div className="contact-grid">
-                    {contacts.map((c) => (
-                        <a
-                            key={c.id}
-                            id={c.id}
-                            href={c.href}
-                            target={c.external ? "_blank" : undefined}
-                            rel={c.external ? "noopener noreferrer" : undefined}
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                textAlign: "center",
-                                padding: "36px 24px",
-                                background: "#fff",
-                                border: "1.5px solid #e8ebff",
-                                borderRadius: "20px",
-                                textDecoration: "none",
-                                transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-6px)";
-                                (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 16px 48px rgba(0,0,0,0.1)";
-                            }}
-                            onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
-                                (e.currentTarget as HTMLAnchorElement).style.boxShadow = "none";
-                            }}
-                        >
-                            <div
+                    {contacts.map((c) => {
+                        const isWhatsApp = c.id === "contact-whatsapp";
+                        return (
+                            <a
+                                key={c.id}
+                                id={c.id}
+                                className="contact-card"
+                                href={c.href}
+                                target={c.external ? "_blank" : undefined}
+                                rel={c.external ? "noopener noreferrer" : undefined}
                                 style={{
-                                    width: "64px",
-                                    height: "64px",
-                                    borderRadius: "18px",
-                                    backgroundColor: c.bg,
                                     display: "flex",
+                                    flexDirection: "column",
                                     alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "white",
-                                    marginBottom: "20px",
+                                    textAlign: "center",
+                                    padding: isWhatsApp ? "40px 24px" : "36px 24px",
+                                    background: isWhatsApp ? "#f0fdf4" : "#fff",
+                                    border: isWhatsApp ? "2px solid #25D366" : "1.5px solid #e8ebff",
+                                    borderRadius: "20px",
+                                    textDecoration: "none",
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                                    boxShadow: isWhatsApp ? "0 4px 24px rgba(37,211,102,0.18)" : "none",
+                                }}
+                                onMouseEnter={(e) => {
+                                    (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-6px)";
+                                    (e.currentTarget as HTMLAnchorElement).style.boxShadow = isWhatsApp
+                                        ? "0 16px 48px rgba(37,211,102,0.25)"
+                                        : "0 16px 48px rgba(0,0,0,0.1)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
+                                    (e.currentTarget as HTMLAnchorElement).style.boxShadow = isWhatsApp
+                                        ? "0 4px 24px rgba(37,211,102,0.18)"
+                                        : "none";
                                 }}
                             >
-                                {c.icon}
-                            </div>
-                            <p
-                                style={{
-                                    fontFamily: "Inter, sans-serif",
-                                    fontWeight: 700,
-                                    fontSize: "11px",
-                                    letterSpacing: "0.12em",
-                                    textTransform: "uppercase",
-                                    color: "#888",
-                                    marginBottom: "8px",
-                                }}
-                            >
-                                {c.label}
-                            </p>
-                            <p
-                                style={{
-                                    fontFamily: "Inter, sans-serif",
-                                    fontWeight: 700,
-                                    fontSize: "1rem",
-                                    color: "#111",
-                                    marginBottom: "6px",
-                                }}
-                            >
-                                {c.value}
-                            </p>
-                            <p
-                                style={{
-                                    fontFamily: "Roboto, sans-serif",
-                                    fontWeight: 400,
-                                    fontSize: "13px",
-                                    color: "#888",
-                                }}
-                            >
-                                {c.sub}
-                            </p>
-                        </a>
-                    ))}
+                                {/* "Fastest Response" badge on WhatsApp */}
+                                {isWhatsApp && (
+                                    <div className="contact-badge" style={{
+                                        position: "absolute", top: "14px", right: "14px",
+                                        background: "#25D366", color: "white",
+                                        fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                        fontSize: "10px", letterSpacing: "0.06em", textTransform: "uppercase",
+                                        padding: "3px 10px", borderRadius: "100px",
+                                    }}>
+                                        Fastest
+                                    </div>
+                                )}
+
+                                {/* Icon */}
+                                <div
+                                    className="contact-icon"
+                                    style={{
+                                        width: "64px", height: "64px",
+                                        borderRadius: "18px",
+                                        backgroundColor: c.bg,
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        color: "white",
+                                        flexShrink: 0,
+                                        marginBottom: "20px",
+                                    }}
+                                >
+                                    {c.icon}
+                                </div>
+
+                                {/* Text */}
+                                <div className="contact-card-text">
+                                    <p style={{
+                                        fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                        fontSize: "11px", letterSpacing: "0.12em",
+                                        textTransform: "uppercase", color: "#888",
+                                        marginBottom: "6px",
+                                    }}>
+                                        {c.label}
+                                    </p>
+                                    <p style={{
+                                        fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                        fontSize: "1rem", color: "#111",
+                                        marginBottom: "4px",
+                                    }}>
+                                        {c.value}
+                                    </p>
+                                    <p style={{
+                                        fontFamily: "Roboto, sans-serif", fontWeight: 400,
+                                        fontSize: "13px", color: "#888",
+                                    }}>
+                                        {c.sub}
+                                    </p>
+                                </div>
+                            </a>
+                        );
+                    })}
                 </div>
             </div>
         </section>

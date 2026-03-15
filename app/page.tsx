@@ -9,6 +9,7 @@ import WhyChooseUs from "@/components/WhyChooseUs";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import MobileCtaBar from "@/components/MobileCtaBar";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"personal" | "business">("personal");
@@ -42,6 +43,7 @@ export default function Home() {
       <ContactSection />
       <Footer />
       <WhatsAppFloat />
+      <MobileCtaBar />
     </main>
   );
 }
