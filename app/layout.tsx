@@ -2,30 +2,46 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Unifi Broadband Plans Malaysia | Authorized Reseller — Home & Business",
+  metadataBase: new URL('https://www.unifi.co.com'),
+  title: "Unifi Broadband Plans Malaysia | Authorized Reseller — From RM89/mth",
   description:
-    "Sign up for Unifi broadband in Malaysia from RM89/mth. Home plans (100Mbps–2Gbps) and Business fibre plans. Free installation, free Wi-Fi router, no hidden fees. Fast approval — WhatsApp us today.",
+    "Sign up for Unifi broadband in Malaysia from RM89/mth. Pakej rumah (100Mbps–2Gbps) dan perniagaan. Free installation, free Wi-Fi router, no hidden fees. WhatsApp us for fast approval.",
   keywords: [
+    // Malay
+    "daftar unifi",
+    "pasang unifi",
+    "pakej unifi murah",
+    "unifi rumah malaysia",
+    "broadband murah malaysia",
+    "pakej internet rumah",
+    "internet laju malaysia",
+    "cara daftar unifi",
+    "unifi perniagaan",
+    "pakej unifi terbaik",
+    "unifi reseller malaysia",
+    // English
     "unifi broadband malaysia",
     "unifi plan malaysia",
     "unifi authorized reseller",
-    "internet malaysia",
     "unifi home broadband",
     "unifi business broadband",
-    "daftar unifi",
     "unifi fibre malaysia",
-    "broadband murah malaysia",
     "unifi 300mbps",
     "unifi 1gbps",
     "tm unifi reseller",
-    "pasang unifi",
   ],
+  alternates: {
+    canonical: 'https://www.unifi.co.com',
+  },
   openGraph: {
     title: "Unifi Broadband Plans Malaysia | From RM89/mth — Free Installation",
     description:
-      "Sign up for Unifi home or business broadband in Malaysia. Plans from RM89/mth with free installation and free Wi-Fi router. WhatsApp us for fast approval.",
+      "Daftar Unifi rumah atau perniagaan di Malaysia. Plans from RM89/mth with free installation and free Wi-Fi router. WhatsApp us for fast approval.",
+    url: 'https://www.unifi.co.com',
+    siteName: 'Unifi Authorized Reseller Malaysia',
     type: "website",
     locale: "en_MY",
+    alternateLocale: ["ms_MY"],
   },
 };
 
