@@ -31,15 +31,15 @@ const backgroundSvg = `
   <text x="80" y="200" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="56" fill="white">Unifi Authorized</text>
   <text x="80" y="272" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="56" fill="white">Reseller Malaysia</text>
 
-  <text x="80" y="340" font-family="Arial, sans-serif" font-weight="300" font-size="26" fill="rgba(255,255,255,0.72)">Pakej broadband rumah &amp; perniagaan</text>
-  <text x="80" y="380" font-family="Arial, sans-serif" font-weight="300" font-size="26" fill="rgba(255,255,255,0.72)">Free installation • Free Wi-Fi router</text>
+  <!-- Free months badge (prominent) -->
+  <rect x="80" y="318" width="560" height="76" rx="38" fill="rgba(255,122,0,0.18)" stroke="#FF7A00" stroke-width="1.5"/>
+  <text x="360" y="366" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="30" fill="#FF7A00" text-anchor="middle">Free 6 months on selected plans</text>
 
-  <!-- Price badge -->
-  <rect x="80" y="418" width="268" height="52" rx="26" fill="rgba(255,122,0,0.18)" stroke="#FF7A00" stroke-width="1.5"/>
-  <text x="214" y="450" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#FF7A00" text-anchor="middle">From RM89/mth</text>
+  <!-- Price tag (smaller) -->
+  <text x="82" y="432" font-family="Arial, sans-serif" font-weight="400" font-size="20" fill="rgba(255,255,255,0.55)">From RM89/mth</text>
 
   <!-- Domain tag -->
-  <text x="80" y="560" font-family="Arial, sans-serif" font-weight="400" font-size="18" fill="rgba(255,255,255,0.45)">unifi.co.com</text>
+  <text x="82" y="555" font-family="Arial, sans-serif" font-weight="400" font-size="18" fill="rgba(255,255,255,0.4)">unifi.co.com</text>
 </svg>
 `;
 
