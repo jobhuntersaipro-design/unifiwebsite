@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: "Unifi Broadband Plans Malaysia | From RM89/mth — Free Installation",
     description:
       "Daftar Unifi rumah atau perniagaan di Malaysia. Plans from RM89/mth with free installation and free Wi-Fi router.",
-    images: ['https://www.unifi.co.com/og-banner.png]'],
+    images: ['https://www.unifi.co.com/og-banner.png'],
   },
 };
 
