@@ -1,15 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, Phone } from "lucide-react";
 
-interface NavbarProps {
-    activeTab: "personal" | "business";
-    onTabChange: (tab: "personal" | "business") => void;
-}
-
-export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
+export default function Navbar() {
+    const pathname = usePathname() || "";
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -18,6 +16,12 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    const navLinks = [
+        { name: "Personal", href: "/personal" },
+        { name: "Business", href: "/business" },
+        { name: "Blog", href: "/blog" },
+    ];
 
     return (
         <header
@@ -73,20 +77,21 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
             >
                 {/* Logo + badge */}
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    {/* Clip container prevents PNG white margins from bleeding outside navbar */}
                     <div style={{
                         height: "44px",
                         display: "flex",
                         alignItems: "center",
                     }}>
-                        <Image
-                            src="/unifi-logo.png"
-                            alt="Unifi"
-                            width={130}
-                            height={44}
-                            style={{ objectFit: "contain", objectPosition: "left center", display: "block" }}
-                            priority
-                        />
+                        <Link href="/">
+                            <Image
+                                src="/unifi-logo.png"
+                                alt="Unifi"
+                                width={130}
+                                height={44}
+                                style={{ objectFit: "contain", objectPosition: "left center", display: "block" }}
+                                priority
+                            />
+                        </Link>
                     </div>
                     <span
                         style={{
@@ -100,6 +105,7 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
                             padding: "2px 6px",
                             textTransform: "uppercase",
                             whiteSpace: "nowrap",
+                            display: "none" // Hide on very small screens if needed, but keeping original styles
                         }}
                     >
                         Authorized Reseller
@@ -111,35 +117,46 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
                     id="tab-nav"
                     style={{
                         display: "flex",
-                        gap: "4px",
+                        gap: "6px",
                     }}
                     className="desktop-nav"
                 >
-                    {(["personal", "business"] as const).map((tab) => (
-                        <button
-                            key={tab}
-                            id={`tab-${tab}`}
-                            onClick={() => onTabChange(tab)}
-                            style={{
-                                fontFamily: "Inter, sans-serif",
-                                fontWeight: 700,
-                                fontSize: "15px",
-                                padding: "10px 24px",
-                                borderRadius: "8px",
-                                border: activeTab === tab
-                                    ? "2px solid var(--cobalt-blue)"
-                                    : "2px solid rgba(24,0,231,0.3)",
-                                cursor: "pointer",
-                                textTransform: "capitalize",
-                                transition: "all 0.2s ease",
-                                backgroundColor:
-                                    activeTab === tab ? "var(--cobalt-blue)" : "transparent",
-                                color: activeTab === tab ? "white" : "var(--cobalt-blue)",
-                            }}
-                        >
-                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        </button>
-                    ))}
+                    {navLinks.map((link) => {
+                        const isActive = pathname.startsWith(link.href);
+                        return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                style={{
+                                    fontFamily: "Inter, sans-serif",
+                                    fontWeight: 700,
+                                    fontSize: "15px",
+                                    padding: "10px 24px",
+                                    borderRadius: "8px",
+                                    border: isActive
+                                        ? "2px solid var(--cobalt-blue)"
+                                        : "2px solid rgba(24,0,231,0.0)",
+                                    textDecoration: "none",
+                                    transition: "all 0.2s ease",
+                                    backgroundColor:
+                                        isActive ? "var(--cobalt-blue)" : "transparent",
+                                    color: isActive ? "white" : "var(--cobalt-blue)",
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.backgroundColor = "rgba(24,0,231,0.05)";
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.backgroundColor = "transparent";
+                                    }
+                                }}
+                            >
+                                {link.name}
+                            </Link>
+                        );
+                    })}
                 </nav>
 
                 {/* Mobile hamburger */}
@@ -168,35 +185,35 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
                         padding: "16px 24px",
                     }}
                 >
-                    {(["personal", "business"] as const).map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => {
-                                onTabChange(tab);
-                                setMobileMenuOpen(false);
-                            }}
-                            style={{
-                                display: "block",
-                                width: "100%",
-                                textAlign: "left",
-                                fontFamily: "Inter, sans-serif",
-                                fontWeight: 700,
-                                fontSize: "16px",
-                                padding: "12px 0",
-                                border: "none",
-                                borderBottom: "1px solid #f0f0f0",
-                                cursor: "pointer",
-                                backgroundColor: "transparent",
-                                color:
-                                    activeTab === tab ? "var(--cobalt-blue)" : "var(--black)",
-                            }}
-                        >
-                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        </button>
-                    ))}
+                    {navLinks.map((link) => {
+                        const isActive = pathname.startsWith(link.href);
+                        return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{
+                                    display: "block",
+                                    width: "100%",
+                                    textAlign: "left",
+                                    fontFamily: "Inter, sans-serif",
+                                    fontWeight: 700,
+                                    fontSize: "16px",
+                                    padding: "12px 0",
+                                    border: "none",
+                                    borderBottom: "1px solid #f0f0f0",
+                                    textDecoration: "none",
+                                    backgroundColor: "transparent",
+                                    color:
+                                        isActive ? "var(--orange)" : "var(--black)",
+                                }}
+                            >
+                                {link.name}
+                            </Link>
+                        );
+                    })}
                 </div>
             )}
-
         </header>
     );
 }
