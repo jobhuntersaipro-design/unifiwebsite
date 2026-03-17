@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     alternateLocale: ["ms_MY"],
     images: [
       {
-        url: 'https://www.unifi.co.com/images/unifi-icon.png',
+        url: 'https://www.unifi.co.com/images/icon.png',
         width: 1200,
         height: 630,
         alt: 'Unifi Authorized Reseller Malaysia',
