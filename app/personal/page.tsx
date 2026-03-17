@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import PersonalTab from "@/components/PersonalTab";
 import WhyChooseUs from "@/components/WhyChooseUs";
+import BlogSection from "@/components/BlogSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
@@ -17,6 +18,7 @@ export default function PersonalPage() {
         <PersonalTab />
       </div>
       <WhyChooseUs />
+      <BlogSection />
       <ContactSection />
       <Footer />
       <WhatsAppFloat />
