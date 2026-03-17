@@ -45,8 +45,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: 'https://www.unifi.co.com/unifi-icon.png',
-        width: 1200,
-        height: 630,
+        width: 1150,
+        height: 603,
         alt: 'Unifi Authorized Reseller Malaysia',
       },
     ],
