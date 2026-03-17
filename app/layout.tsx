@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     alternateLocale: ["ms_MY"],
     images: [
       {
-        url: 'https://www.unifi.co.com/app/icon.png',
+        url: 'https://www.unifi.co.com/unifi-icon.png',
         width: 1200,
         height: 630,
         alt: 'Unifi Authorized Reseller Malaysia',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: "Unifi Broadband Plans Malaysia | From RM89/mth — Free Installation",
     description:
       "Daftar Unifi rumah atau perniagaan di Malaysia. Plans from RM89/mth with free installation and free Wi-Fi router.",
-    images: ['/images/unifi-icon.png'],
+    images: ['https://www.unifi.co.com/unifi-icon.png'],
   },
 };
 
