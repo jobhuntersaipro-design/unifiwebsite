@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { Check, Wifi, ChevronDown, ChevronUp, Star } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Check, Wifi, ChevronDown, ChevronUp, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
@@ -26,6 +27,18 @@ type BundleOption = {
     features: string[];
 };
 
+type DeviceAddon = {
+    id: string;
+    label: string;
+    addPrice: number;
+};
+
+type DevicePricing = {
+    base: number;
+    bundlePrices: Record<string, number>;
+    addons: DeviceAddon[];
+};
+
 type Plan = {
     id: string;
     name: string;
@@ -40,6 +53,7 @@ type Plan = {
     popular: boolean;
     includes: string[];
     bundles: BundleOption[];
+    devicePricing: DevicePricing | null;
     msg: string;
 };
 
@@ -71,6 +85,7 @@ const plans: Plan[] = [
         bundles: [
             { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 29.90, bundleTotal: "118.90", features: NETFLIX_BASIC_FEATURES },
         ],
+        devicePricing: null,
         msg: "Hi, I'm interested in the Unifi UniVerse 100 (RM89/mth) plan. Can you help?",
     },
     {
@@ -86,6 +101,13 @@ const plans: Plan[] = [
             { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 3.00, bundleTotal: "132", features: NETFLIX_BASIC_FEATURES },
             { id: "hbo-max", label: "HBO Max Standard", logo: "M", addPrice: 3.00, bundleTotal: "132", features: HBO_MAX_FEATURES },
         ],
+        devicePricing: {
+            base: 129,
+            bundlePrices: { "netflix-basic": 155, "hbo-max": 153 },
+            addons: [
+                { id: "tv-43", label: '43" TV', addPrice: 10 },
+            ],
+        },
         msg: "Hi, I'm interested in the Unifi UniVerse 300 (RM129/mth) plan. Can you help?",
     },
     {
@@ -100,6 +122,15 @@ const plans: Plan[] = [
         bundles: [
             { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 54.90, bundleTotal: "203.90", features: NETFLIX_STD_FEATURES },
         ],
+        devicePricing: {
+            base: 149,
+            bundlePrices: { "netflix-std": 193 },
+            addons: [
+                { id: "ipad-11", label: 'iPad 11" A16 128GB', addPrice: 10 },
+                { id: "tv-55", label: '55" TV', addPrice: 10 },
+                { id: "tv-65-500", label: '65" TV', addPrice: 20 },
+            ],
+        },
         msg: "Hi, I'm interested in the Unifi UniVerse 500 (RM149/mth) plan. Can you help?",
     },
     {
@@ -114,6 +145,14 @@ const plans: Plan[] = [
         bundles: [
             { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 44.90, bundleTotal: "293.90", features: NETFLIX_STD_FEATURES },
         ],
+        devicePricing: {
+            base: 249,
+            bundlePrices: { "netflix-std": 283 },
+            addons: [
+                { id: "tv-65-1g", label: '65" TV', addPrice: 10 },
+                { id: "tv-75", label: '75" TV', addPrice: 20 },
+            ],
+        },
         msg: "Hi, I'm interested in the Unifi UniVerse 1Gbps (RM249/mth) plan. Can you help?",
     },
     {
@@ -128,6 +167,7 @@ const plans: Plan[] = [
         bundles: [
             { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 44.90, bundleTotal: "363.90", features: NETFLIX_STD_FEATURES },
         ],
+        devicePricing: null,
         msg: "Hi, I'm interested in the Unifi UniVerse 2Gbps (RM319/mth) plan. Can you help?",
     },
 ];
@@ -164,11 +204,10 @@ function BundleCard({
                     {selected && <Check size={14} color="#fff" strokeWidth={3} />}
                 </div>
 
-                {/* Name — nowrap prevents wrapping */}
+                {/* Name */}
                 <span style={{
                     fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "14px",
-                    color: "#111", flex: 1, whiteSpace: "nowrap", overflow: "hidden",
-                    textOverflow: "ellipsis",
+                    color: "#111", flex: 1, minWidth: 0, whiteSpace: "normal",
                 }}>
                     {bundle.label}
                 </span>
@@ -220,12 +259,26 @@ function BundleCard({
 function PlanCard({ plan }: { plan: Plan }) {
     const [bundleOpen, setBundleOpen] = useState(false);
     const [selectedBundle, setSelectedBundle] = useState<string | null>(null);
+    const [deviceOpen, setDeviceOpen] = useState(false);
+    const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
     const chosen = plan.bundles.find((b) => b.id === selectedBundle);
+    const chosenDevice = plan.devicePricing?.addons.find((d) => d.id === selectedDevice) ?? null;
+
+    const deviceBase = plan.devicePricing
+        ? (selectedBundle && plan.devicePricing.bundlePrices[selectedBundle]
+            ? plan.devicePricing.bundlePrices[selectedBundle]
+            : plan.devicePricing.base)
+        : 0;
+
     const displayPrice = chosen ? chosen.bundleTotal : plan.price;
-    const waMsg = chosen
-        ? plan.msg.replace("Can you help?", `with ${chosen.label} add-on. Can you help?`)
-        : plan.msg;
+    const finalPrice = chosenDevice ? `${deviceBase + chosenDevice.addPrice}` : displayPrice;
+
+    const bundlePart = chosen ? ` with ${chosen.label} bundle` : "";
+    const devicePart = chosenDevice
+        ? ` + ${chosenDevice.label} device add-on (+RM${chosenDevice.addPrice}/mth, 3-year contract, delivery 2–4 weeks after installation)`
+        : "";
+    const waMsg = plan.msg.replace("Can you help?", `${bundlePart}${devicePart}. Can you help?`);
 
     return (
         <div
@@ -312,7 +365,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                 <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
                     <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "13px", color: plan.color }}>RM</span>
                     <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 900, fontSize: "2.4rem", color: plan.color, lineHeight: 1 }}>
-                        {displayPrice}
+                        {finalPrice}
                     </span>
                     <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "13px", color: "#888" }}>/mth</span>
                 </div>
@@ -347,45 +400,146 @@ function PlanCard({ plan }: { plan: Plan }) {
 
             {/* Optional bundle section */}
             <div style={{ padding: "0 20px 14px" }}>
-                {/* Toggle */}
-                <button
-                    onClick={(e) => { e.stopPropagation(); setBundleOpen((o) => !o); }}
-                    style={{
-                        display: "flex", alignItems: "center", gap: "7px",
-                        background: "none", border: "none", padding: "4px 0 10px",
-                        cursor: "pointer", width: "100%",
-                        fontFamily: "Inter, sans-serif", fontWeight: 700,
-                        fontSize: "10.5px", color: "#999", letterSpacing: "0.06em",
-                        textTransform: "uppercase",
-                    }}
-                >
-                    <span style={{
-                        display: "inline-flex", alignItems: "center", justifyContent: "center",
-                        width: "15px", height: "15px",
-                        border: "1.5px solid #ccc", borderRadius: "3px",
-                        fontSize: "13px", color: "#aaa", lineHeight: 1,
-                        transform: bundleOpen ? "rotate(45deg)" : "none",
-                        transition: "transform 0.2s",
-                    }}>+</span>
-                    Optional Bundle
-                </button>
+                <div style={{
+                    border: "1.5px solid #e5e5e5", borderRadius: "10px", padding: "4px 12px 10px",
+                }}>
+                    {/* Toggle */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setBundleOpen((o) => !o); }}
+                        style={{
+                            display: "flex", alignItems: "center", gap: "7px",
+                            background: "none", border: "none", padding: "8px 0 4px",
+                            cursor: "pointer", width: "100%",
+                            fontFamily: "Inter, sans-serif", fontWeight: 700,
+                            fontSize: "10.5px", color: "#999", letterSpacing: "0.06em",
+                            textTransform: "uppercase",
+                        }}
+                    >
+                        <span style={{
+                            display: "inline-flex", alignItems: "center", justifyContent: "center",
+                            width: "15px", height: "15px",
+                            border: "1.5px solid #ccc", borderRadius: "3px",
+                            fontSize: "13px", color: "#aaa", lineHeight: 1,
+                            transform: bundleOpen ? "rotate(45deg)" : "none",
+                            transition: "transform 0.2s",
+                        }}>+</span>
+                        Optional Bundle
+                    </button>
 
-                {/* Bundle cards */}
-                {bundleOpen && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        {plan.bundles.map((b) => (
-                            <BundleCard
-                                key={b.id}
-                                bundle={b}
-                                selected={selectedBundle === b.id}
-                                planColor={plan.color}
-                                lightBg={plan.lightBg}
-                                onToggle={() => setSelectedBundle((prev) => prev === b.id ? null : b.id)}
-                            />
-                        ))}
-                    </div>
-                )}
+                    {/* Bundle cards */}
+                    {bundleOpen && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                            {plan.bundles.map((b) => (
+                                <BundleCard
+                                    key={b.id}
+                                    bundle={b}
+                                    selected={selectedBundle === b.id}
+                                    planColor={plan.color}
+                                    lightBg={plan.lightBg}
+                                    onToggle={() => setSelectedBundle((prev) => prev === b.id ? null : b.id)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {/* Device Add-on — Limited Time Promo */}
+            {plan.devicePricing && (
+                <div style={{ padding: "0 20px 14px" }}>
+                    <div style={{
+                        border: "1.5px solid rgba(255,94,0,0.4)", borderRadius: "10px", padding: "4px 12px 10px",
+                        background: "rgba(255,94,0,0.02)",
+                    }}>
+                    {/* Promo header toggle */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setDeviceOpen((o) => !o); }}
+                        style={{
+                            display: "flex", alignItems: "center", gap: "7px",
+                            width: "100%", border: "none", cursor: "pointer",
+                            background: "none", padding: "8px 0 4px",
+                            fontFamily: "Inter, sans-serif", fontWeight: 700,
+                            fontSize: "10.5px", letterSpacing: "0.06em",
+                            textTransform: "uppercase", color: "var(--accent-orange)",
+                        }}
+                    >
+                        <span style={{
+                            display: "inline-flex", alignItems: "center", justifyContent: "center",
+                            width: "15px", height: "15px",
+                            border: "0px solid var(--accent-orange)", borderRadius: "3px",
+                            fontSize: "13px", lineHeight: 1,
+                        }}>🔥</span>
+                        Limited Time Promo
+                    </button>
+
+                    {deviceOpen && (
+                        <div style={{
+                            border: "1.5px solid rgba(255,94,0,0.3)",
+                            borderRadius: "12px", overflow: "hidden",
+                        }}>
+                            {/* Banner */}
+                            <div style={{
+                                background: "linear-gradient(90deg, var(--orange), var(--accent-orange))",
+                                padding: "8px 14px",
+                                display: "flex", alignItems: "center", gap: "6px",
+                            }}>
+                                <span style={{
+                                    fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                    fontSize: "11px", color: "white", letterSpacing: "0.05em",
+                                    textTransform: "uppercase",
+                                }}>🎁 Add-on device</span>
+                            </div>
+
+                            {/* Device options */}
+                            <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: "8px", background: "#fff8f4" }}>
+                                {plan.devicePricing.addons.map((d) => {
+                                    const isSelected = selectedDevice === d.id;
+                                    return (
+                                        <div
+                                            key={d.id}
+                                            onClick={(e) => { e.stopPropagation(); setSelectedDevice((prev) => prev === d.id ? null : d.id); }}
+                                            style={{
+                                                display: "flex", alignItems: "center", gap: "10px",
+                                                border: isSelected ? "2px solid var(--accent-orange)" : "1.5px solid #f0c8a0",
+                                                borderRadius: "8px", padding: "9px 12px",
+                                                background: isSelected ? "rgba(255,94,0,0.07)" : "white",
+                                                cursor: "pointer", transition: "all 0.2s",
+                                            }}
+                                        >
+                                            <div style={{
+                                                width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
+                                                border: isSelected ? "2px solid var(--accent-orange)" : "2px solid #ccc",
+                                                background: isSelected ? "var(--accent-orange)" : "transparent",
+                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                transition: "all 0.2s",
+                                            }}>
+                                                {isSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+                                            </div>
+                                            <span style={{
+                                                fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                                fontSize: "13px", color: "#222", flex: 1,
+                                            }}>{d.label}</span>
+                                            <span style={{
+                                                fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                                fontSize: "12px", color: "var(--accent-orange)", whiteSpace: "nowrap",
+                                            }}>+RM{d.addPrice}/mth</span>
+                                        </div>
+                                    );
+                                })}
+
+                                {/* Contract note */}
+                                <p style={{
+                                    fontFamily: "Roboto, sans-serif", fontSize: "10.5px",
+                                    color: "#888", margin: "2px 0 0", lineHeight: 1.5,
+                                }}>
+                                    📦 3-year contract · Device delivered 2–4 weeks after installation
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                    </div>
+                </div>
+            )}
 
             {/* CTA */}
             <div style={{ padding: "0 20px 20px" }}>
@@ -412,6 +566,8 @@ function PlanCard({ plan }: { plan: Plan }) {
 }
 
 export default function PersonalTab() {
+    const swiperRef = useRef<SwiperType | null>(null);
+
     return (
         <section id="plans" style={{ padding: "64px 0 80px", background: "#fafbff" }}>
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
@@ -443,29 +599,48 @@ export default function PersonalTab() {
                     </div>
                 </div>
 
-                {/* Swiper slider */}
-                <Swiper
-                    modules={[Pagination]}
-                    pagination={{ clickable: true }}
-                    spaceBetween={16}
-                    slidesPerView={1.2}
-                    initialSlide={1}
-                    onClick={(swiper) => swiper.slideNext()}
-                    breakpoints={{
-                        640:  { slidesPerView: 2.1, spaceBetween: 20 },
-                        1024: { slidesPerView: 3.2, spaceBetween: 24 },
-                        1280: { slidesPerView: 4,   spaceBetween: 24 },
-                        1400: { slidesPerView: 5,   spaceBetween: 24 },
-                    }}
-                    className="plans-swiper"
-                    style={{ paddingBottom: "52px", paddingTop: "8px" } as React.CSSProperties}
-                >
-                    {plans.map((plan) => (
-                        <SwiperSlide key={plan.id}>
-                            <PlanCard plan={plan} />
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                {/* Swiper slider with nav buttons */}
+                <div className="plans-scroll-wrapper">
+                    <button
+                        className="plans-scroll-btn plans-scroll-prev"
+                        onClick={() => swiperRef.current?.slidePrev()}
+                        aria-label="Previous plans"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+
+                    <Swiper
+                        modules={[Pagination]}
+                        pagination={{ clickable: true }}
+                        spaceBetween={16}
+                        slidesPerView={1.2}
+                        slidesPerGroup={4}
+                        initialSlide={0}
+                        onSwiper={(swiper) => { swiperRef.current = swiper; }}
+                        breakpoints={{
+                            640:  { slidesPerView: 1.5, slidesPerGroup: 4, spaceBetween: 20 },
+                            1024: { slidesPerView: 2.5, slidesPerGroup: 3, spaceBetween: 24 },
+                            1280: { slidesPerView: 2.9, slidesPerGroup: 3, spaceBetween: 24 },
+                            1400: { slidesPerView: 3.6, slidesPerGroup: 2, spaceBetween: 24 },
+                        }}
+                        className="plans-swiper"
+                        style={{ paddingBottom: "52px", paddingTop: "8px" } as React.CSSProperties}
+                    >
+                        {plans.map((plan) => (
+                            <SwiperSlide key={plan.id}>
+                                <PlanCard plan={plan} />
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+
+                    <button
+                        className="plans-scroll-btn plans-scroll-next"
+                        onClick={() => swiperRef.current?.slideNext()}
+                        aria-label="Next plans"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
 
                 <p style={{
                     textAlign: "center", marginTop: "8px",

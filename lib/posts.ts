@@ -21,6 +21,11 @@ function calculateReadingTime(content: string): number {
 }
 
 export function getAllPosts(): Post[] {
+  // Return empty array if posts directory doesn't exist
+  if (!fs.existsSync(postsDirectory)) {
+    return []
+  }
+
   const fileNames = fs.readdirSync(postsDirectory)
 
   const posts = fileNames
@@ -44,6 +49,7 @@ export function getAllPosts(): Post[] {
 
   return posts.sort((a, b) => (a.date < b.date ? 1 : -1))
 }
+
 
 export function getPostBySlug(slug: string): Post | null {
   try {
