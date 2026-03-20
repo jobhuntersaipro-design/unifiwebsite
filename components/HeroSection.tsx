@@ -11,7 +11,7 @@ const heroContent = {
     personal: {
         label: "TM Authorized Reseller · Malaysia",
         heading: "FREE iPad. 500Mbps Speed.",
-        highlight: "From just RM7/Day.",
+        highlight: "From just RM7/Day!",
         sub: "Free installation, free Wi-Fi router, and no hidden costs. Plans from 100Mbps to 2Gbps — sign up in minutes.",
         bg: "linear-gradient(135deg, var(--cobalt-blue) 0%, var(--navy-blue) 60%, #0a0050 100%)",
     },
