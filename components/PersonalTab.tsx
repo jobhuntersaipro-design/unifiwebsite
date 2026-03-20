@@ -259,7 +259,7 @@ function BundleCard({
 function PlanCard({ plan }: { plan: Plan }) {
     const [bundleOpen, setBundleOpen] = useState(false);
     const [selectedBundle, setSelectedBundle] = useState<string | null>(null);
-    const [deviceOpen, setDeviceOpen] = useState(false);
+    const [deviceOpen, setDeviceOpen] = useState(true);
     const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
     const chosen = plan.bundles.find((b) => b.id === selectedBundle);
@@ -398,52 +398,6 @@ function PlanCard({ plan }: { plan: Plan }) {
                 </ul>
             </div>
 
-            {/* Optional bundle section */}
-            <div style={{ padding: "0 20px 14px" }}>
-                <div style={{
-                    border: "1.5px solid #e5e5e5", borderRadius: "10px", padding: "4px 12px 10px",
-                }}>
-                    {/* Toggle */}
-                    <button
-                        onClick={(e) => { e.stopPropagation(); setBundleOpen((o) => !o); }}
-                        style={{
-                            display: "flex", alignItems: "center", gap: "7px",
-                            background: "none", border: "none", padding: "8px 0 4px",
-                            cursor: "pointer", width: "100%",
-                            fontFamily: "Inter, sans-serif", fontWeight: 700,
-                            fontSize: "10.5px", color: "#999", letterSpacing: "0.06em",
-                            textTransform: "uppercase",
-                        }}
-                    >
-                        <span style={{
-                            display: "inline-flex", alignItems: "center", justifyContent: "center",
-                            width: "15px", height: "15px",
-                            border: "1.5px solid #ccc", borderRadius: "3px",
-                            fontSize: "13px", color: "#aaa", lineHeight: 1,
-                            transform: bundleOpen ? "rotate(45deg)" : "none",
-                            transition: "transform 0.2s",
-                        }}>+</span>
-                        Optional Bundle
-                    </button>
-
-                    {/* Bundle cards */}
-                    {bundleOpen && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                            {plan.bundles.map((b) => (
-                                <BundleCard
-                                    key={b.id}
-                                    bundle={b}
-                                    selected={selectedBundle === b.id}
-                                    planColor={plan.color}
-                                    lightBg={plan.lightBg}
-                                    onToggle={() => setSelectedBundle((prev) => prev === b.id ? null : b.id)}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-
             {/* Device Add-on — Limited Time Promo */}
             {plan.devicePricing && (
                 <div style={{ padding: "0 20px 14px" }}>
@@ -541,6 +495,49 @@ function PlanCard({ plan }: { plan: Plan }) {
                 </div>
             )}
 
+            {/* Optional bundle section */}
+            <div style={{ padding: "0 20px 14px" }}>
+                <div style={{
+                    border: "1.5px solid #e5e5e5", borderRadius: "10px", padding: "4px 12px 10px",
+                }}>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setBundleOpen((o) => !o); }}
+                        style={{
+                            display: "flex", alignItems: "center", gap: "7px",
+                            background: "none", border: "none", padding: "8px 0 4px",
+                            cursor: "pointer", width: "100%",
+                            fontFamily: "Inter, sans-serif", fontWeight: 700,
+                            fontSize: "10.5px", color: "#999", letterSpacing: "0.06em",
+                            textTransform: "uppercase",
+                        }}
+                    >
+                        <span style={{
+                            display: "inline-flex", alignItems: "center", justifyContent: "center",
+                            width: "15px", height: "15px",
+                            border: "1.5px solid #ccc", borderRadius: "3px",
+                            fontSize: "13px", color: "#aaa", lineHeight: 1,
+                            transform: bundleOpen ? "rotate(45deg)" : "none",
+                            transition: "transform 0.2s",
+                        }}>+</span>
+                        Optional Bundle
+                    </button>
+                    {bundleOpen && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                            {plan.bundles.map((b) => (
+                                <BundleCard
+                                    key={b.id}
+                                    bundle={b}
+                                    selected={selectedBundle === b.id}
+                                    planColor={plan.color}
+                                    lightBg={plan.lightBg}
+                                    onToggle={() => setSelectedBundle((prev) => prev === b.id ? null : b.id)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
             {/* CTA */}
             <div style={{ padding: "0 20px 20px" }}>
                 <a
@@ -614,11 +611,11 @@ export default function PersonalTab() {
                         pagination={{ clickable: true }}
                         spaceBetween={16}
                         slidesPerView={1.2}
-                        slidesPerGroup={4}
+                        slidesPerGroup={1}
                         initialSlide={0}
                         onSwiper={(swiper) => { swiperRef.current = swiper; }}
                         breakpoints={{
-                            640:  { slidesPerView: 1.5, slidesPerGroup: 4, spaceBetween: 20 },
+                            640:  { slidesPerView: 1.5, slidesPerGroup: 2, spaceBetween: 20 },
                             1024: { slidesPerView: 2.5, slidesPerGroup: 3, spaceBetween: 24 },
                             1280: { slidesPerView: 2.9, slidesPerGroup: 3, spaceBetween: 24 },
                             1400: { slidesPerView: 3.6, slidesPerGroup: 2, spaceBetween: 24 },

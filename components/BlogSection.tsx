@@ -69,7 +69,7 @@ export default function BlogSection() {
                 style={{
                   position: "relative",
                   width: "100%",
-                  aspectRatio: "16/9",
+                  aspectRatio: "3/2",
                   flexShrink: 0,
                   background: "#f0f2ff",
                   overflow: "hidden",
@@ -80,7 +80,7 @@ export default function BlogSection() {
                     src={post.image}
                     alt={post.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 942px) 100vw, 33vw"
                     style={{ objectFit: "cover" }}
                   />
                 ) : (

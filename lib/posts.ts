@@ -11,6 +11,7 @@ export type Post = {
   description: string
   content: string
   image?: string
+  imagePosition?: string
   readingTime: number
 }
 
@@ -43,6 +44,7 @@ export function getAllPosts(): Post[] {
         description: data.description,
         content,
         image: data.image || null,
+        imagePosition: data.imagePosition || 'top',
         readingTime: calculateReadingTime(content),
       }
     })
@@ -64,6 +66,7 @@ export function getPostBySlug(slug: string): Post | null {
       description: data.description,
       content,
       image: data.image || null,
+      imagePosition: data.imagePosition || 'top',
       readingTime: calculateReadingTime(content),
     }
   } catch {

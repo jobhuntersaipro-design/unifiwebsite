@@ -10,8 +10,8 @@ interface HeroSectionProps {
 const heroContent = {
     personal: {
         label: "TM Authorized Reseller · Malaysia",
-        heading: "Unifi Home Broadband",
-        highlight: "From RM89/mth.",
+        heading: "FREE iPad. 500Mbps Speed.",
+        highlight: "From just RM7/Day.",
         sub: "Free installation, free Wi-Fi router, and no hidden costs. Plans from 100Mbps to 2Gbps — sign up in minutes.",
         bg: "linear-gradient(135deg, var(--cobalt-blue) 0%, var(--navy-blue) 60%, #0a0050 100%)",
     },
@@ -64,7 +64,7 @@ export default function HeroSection({ activeTab }: HeroSectionProps) {
                 <h1 style={{
                     fontFamily: "Inter, sans-serif", fontWeight: 900,
                     fontSize: "clamp(1.9rem, 4.5vw, 3.2rem)",
-                    color: "white", lineHeight: 1.1, marginBottom: "14px",
+                    color: "white", lineHeight: 1.5, marginBottom: "24px",
                 }}>
                     {content.heading} <br />
                     <span style={{ color: "var(--orange)" }}>{content.highlight}</span>

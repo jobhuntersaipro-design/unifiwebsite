@@ -45,8 +45,8 @@ function BlogCard({ post }: { post: Post }) {
             src={post.image}
             alt={post.title}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            style={{ objectFit: "cover" }}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 75vw, 50vw"
+            style={{ objectFit: "cover", objectPosition: post.imagePosition || "top" }}
           />
         ) : (
           <div
@@ -323,8 +323,8 @@ export default async function BlogPage({ searchParams }: Props) {
                     alt={heroPost.title}
                     fill
                     priority
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    style={{ objectFit: "cover" }}
+                    sizes="(max-width: 1000px) 100vw, 75vw"
+                    style={{ objectFit: "cover", objectPosition: heroPost.imagePosition || "top" }}
                   />
                 )}
               </div>

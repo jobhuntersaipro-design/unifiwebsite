@@ -238,7 +238,7 @@ export default async function BlogPostPage({ params }: Props) {
       {post.image && (
         <div
           style={{
-            maxWidth: "900px",
+            maxWidth: "942px",
             margin: "-32px auto 0",
             padding: "0 24px",
             position: "relative",
@@ -249,7 +249,7 @@ export default async function BlogPostPage({ params }: Props) {
             style={{
               position: "relative",
               width: "100%",
-              aspectRatio: "16/7",
+              aspectRatio: "3/2",
               borderRadius: "16px",
               overflow: "hidden",
               boxShadow: "0 12px 48px rgba(24,0,231,0.18)",
@@ -260,7 +260,7 @@ export default async function BlogPostPage({ params }: Props) {
               alt={post.title}
               fill
               priority
-              sizes="(max-width: 900px) 100vw, 900px"
+              sizes="(max-width: 942px) 100vw, 942px"
               style={{ objectFit: "cover" }}
             />
           </div>
