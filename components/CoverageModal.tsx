@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, MapPin } from "lucide-react";
+import { fireWhatsAppConversion } from "@/lib/gtag";
 
 const WHATSAPP_NUMBER = "601169497969";
 
@@ -31,6 +32,7 @@ function Modal({ onClose }: { onClose: () => void }) {
         e.preventDefault();
         const selectedLabel = PLAN_OPTIONS.find((o) => o.value === plan)?.label ?? plan;
         const msg = `Hi, I'd like to check coverage for my address.\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\nInterested Plan: ${selectedLabel}\n\nPlease advise on availability. Thank you!`;
+        fireWhatsAppConversion();
         window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
     };
 

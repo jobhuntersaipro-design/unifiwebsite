@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { fireWhatsAppConversion } from "@/lib/gtag";
 import { Check, Wifi, Star } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -244,6 +245,7 @@ function PlanCard({ plan }: { plan: BizPlan }) {
                     href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(plan.msg)}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={fireWhatsAppConversion}
                     style={{
                         display: "flex", alignItems: "center", justifyContent: "center",
                         width: "100%", backgroundColor: plan.color, color: "white",

@@ -12,6 +12,7 @@ export type Post = {
   content: string
   image?: string
   imagePosition?: string
+  heroImage?: string
   readingTime: number
 }
 
@@ -67,6 +68,7 @@ export function getPostBySlug(slug: string): Post | null {
       content,
       image: data.image || null,
       imagePosition: data.imagePosition || 'top',
+      heroImage: data.heroImage || null,
       readingTime: calculateReadingTime(content),
     }
   } catch {

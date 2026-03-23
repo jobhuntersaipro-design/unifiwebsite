@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { fireWhatsAppConversion } from "@/lib/gtag";
 
 const WHATSAPP_NUMBER = "601169497969";
 const WHATSAPP_MSG = encodeURIComponent("Hi, I'm interested in a Unifi plan. Can you help me?");
@@ -72,6 +73,7 @@ export default function MobileCtaBar() {
                     href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={fireWhatsAppConversion}
                     style={{
                         flex: 2,
                         display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",

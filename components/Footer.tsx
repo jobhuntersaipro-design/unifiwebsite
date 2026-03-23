@@ -156,6 +156,7 @@ export default function Footer() {
                         href="https://wa.me/601169497969?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Unifi%20plans."
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={fireWhatsAppConversion}
                         style={{
                             display: "inline-flex",
                             alignItems: "center",

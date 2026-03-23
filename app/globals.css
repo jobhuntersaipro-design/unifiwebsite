@@ -513,6 +513,36 @@ h3 {
   gap: 20px;
 }
 
+/* Personal hero: side-by-side on desktop, stacked on mobile */
+.hero-personal-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .hero-personal-grid {
+    grid-template-columns: 1fr;
+    text-align: center !important;
+  }
+  .hero-personal-grid .hero-text {
+    text-align: center !important;
+  }
+  .hero-personal-grid .hero-text p {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .hero-trust-badges {
+    justify-content: center !important;
+  }
+  .hero-personal-ipad {
+    width: 220px !important;
+    height: 220px !important;
+    margin: 0 auto;
+  }
+}
+
 /* Blog hero card: side-by-side on desktop */
 .blog-hero-card {
   display: grid;

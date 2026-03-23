@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageCircle, Phone, Mail } from "lucide-react";
+import { fireWhatsAppConversion } from "@/lib/gtag";
 
 const WHATSAPP_NUMBER = "601169497969";
 const PHONE_NUMBER = "+60164609428";
@@ -97,6 +98,7 @@ export default function ContactSection() {
                                 href={c.href}
                                 target={c.external ? "_blank" : undefined}
                                 rel={c.external ? "noopener noreferrer" : undefined}
+                                onClick={isWhatsApp ? fireWhatsAppConversion : undefined}
                                 style={{
                                     display: "flex",
                                     flexDirection: "column",

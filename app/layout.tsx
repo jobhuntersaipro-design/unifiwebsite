@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.unifi.co.com'),
-  title: "Unifi Broadband Plans Malaysia | Authorized Reseller — From RM89/mth",
+  title: "Daftar Unifi Mudah & Laju | Reseller Sah — Free Installation, RM89/mth",
   description:
     "Sign up for Unifi broadband in Malaysia from RM89/mth. Pakej rumah (100Mbps–2Gbps) dan perniagaan. Free installation, free Wi-Fi router, no hidden fees. WhatsApp us for fast approval.",
   keywords: [
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
     canonical: 'https://www.unifi.co.com',
   },
   openGraph: {
-    title: "Unifi Broadband Plans Malaysia | From RM89/mth — Free Installation",
+    title: "Daftar Unifi Mudah & Laju | Reseller Sah — Free Installation, RM89/mth",
     description:
       "Daftar Unifi rumah atau perniagaan di Malaysia. Plans from RM89/mth with free installation and free Wi-Fi router. WhatsApp us for fast approval.",
     url: 'https://www.unifi.co.com',
@@ -113,7 +114,21 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18035024732"
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-tag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18035024732');
+          `}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }

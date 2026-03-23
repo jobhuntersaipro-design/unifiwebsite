@@ -1,5 +1,7 @@
 "use client";
 
+import { fireWhatsAppConversion } from "@/lib/gtag";
+
 const WHATSAPP_NUMBER = "601169497969";
 
 export default function WhatsAppFloat() {
@@ -10,6 +12,7 @@ export default function WhatsAppFloat() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
+            onClick={fireWhatsAppConversion}
             style={{
                 position: "fixed",
                 bottom: "28px",
