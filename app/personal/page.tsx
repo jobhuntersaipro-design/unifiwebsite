@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import PersonalTab from "@/components/PersonalTab";
@@ -8,6 +9,11 @@ import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import MobileCtaBar from "@/components/MobileCtaBar";
 
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://www.unifi.co.com/personal',
+  },
+};
 
 export default function PersonalPage() {
   return (

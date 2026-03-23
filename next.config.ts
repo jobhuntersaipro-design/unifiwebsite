@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
@@ -9,11 +9,20 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**', // allows any external image — good for Claude-generated posts
+        hostname: '**',
       },
     ],
   },
-}
-
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'unifi.co.com' }],
+        destination: 'https://www.unifi.co.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
+};
 
 export default nextConfig;
