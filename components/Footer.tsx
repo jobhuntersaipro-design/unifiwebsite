@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { MessageCircle } from "lucide-react";
+import { fireWhatsAppConversion } from "@/lib/gtag";
 
 export default function Footer() {
     const year = new Date().getFullYear();
