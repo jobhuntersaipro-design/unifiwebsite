@@ -35,33 +35,6 @@ export default function Navbar() {
                 transition: "box-shadow 0.3s ease",
             }}
         >
-            {/* Top bar */}
-            <div
-                style={{
-                    backgroundColor: "var(--cobalt-blue)",
-                    padding: "6px 24px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                }}
-            >
-                <a
-                    href="tel:+60164609428"
-                    style={{
-                        color: "white",
-                        fontSize: "12px",
-                        fontFamily: "Roboto, sans-serif",
-                        fontWeight: 500,
-                        textDecoration: "none",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                    }}
-                >
-                    <Phone size={12} />
-                    +6016 460 9428
-                </a>
-            </div>
 
             {/* Main nav */}
             <div

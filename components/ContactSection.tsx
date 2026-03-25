@@ -1,10 +1,9 @@
 "use client";
 
-import { MessageCircle, Phone, Mail } from "lucide-react";
+import { MessageCircle, Clock, Mail } from "lucide-react";
 import { fireWhatsAppConversion } from "@/lib/gtag";
 
 const WHATSAPP_NUMBER = "601169497969";
-const PHONE_NUMBER = "+60164609428";
 const WHATSAPP_MSG = encodeURIComponent("Hi, I'm interested in Unifi plan. Can you help me?");
 
 const contacts = [
@@ -20,15 +19,15 @@ const contacts = [
         external: true,
     },
     {
-        id: "contact-phone",
-        icon: <Phone size={28} />,
-        label: "Call Us",
-        value: "+6016 460 9428",
-        sub: "Mon–Sun, 9am–9pm",
-        href: `tel:${PHONE_NUMBER}`,
+        id: "contact-hours",
+        icon: <Clock size={28} />,
+        label: "Office Hours",
+        value: "Mon–Sun, 9am–9pm",
+        sub: "WhatsApp us anytime",
+        href: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`,
         bg: "var(--cobalt-blue)",
         hoverBg: "var(--cobalt-blue-dark)",
-        external: false,
+        external: true,
     },
     {
         id: "contact-email",
