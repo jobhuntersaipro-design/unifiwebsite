@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, Clock, Mail } from "lucide-react";
+import { MessageCircle, Mail } from "lucide-react";
 import { fireWhatsAppConversion } from "@/lib/gtag";
 
 const WHATSAPP_NUMBER = "601169497969";
@@ -11,22 +11,11 @@ const contacts = [
         id: "contact-whatsapp",
         icon: <MessageCircle size={28} />,
         label: "WhatsApp",
-        value: "+6011 6949 7969",
+        value: "+601169497969",
         sub: "Chat with us anytime",
         href: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`,
         bg: "#25D366",
         hoverBg: "#1da851",
-        external: true,
-    },
-    {
-        id: "contact-hours",
-        icon: <Clock size={28} />,
-        label: "Office Hours",
-        value: "Mon–Sun, 9am–9pm",
-        sub: "WhatsApp us anytime",
-        href: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`,
-        bg: "var(--cobalt-blue)",
-        hoverBg: "var(--cobalt-blue-dark)",
         external: true,
     },
     {

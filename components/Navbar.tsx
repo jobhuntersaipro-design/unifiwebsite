@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
     const pathname = usePathname() || "";
@@ -35,6 +35,8 @@ export default function Navbar() {
                 transition: "box-shadow 0.3s ease",
             }}
         >
+            {/* Top bar */}
+            <div style={{ backgroundColor: "var(--cobalt-blue)", height: "24px" }} />
 
             {/* Main nav */}
             <div
