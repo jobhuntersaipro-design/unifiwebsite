@@ -11,7 +11,7 @@ const contacts = [
         id: "contact-whatsapp",
         icon: <MessageCircle size={28} />,
         label: "WhatsApp",
-        value: "+601169497969",
+        value: "+6011 6949 7969",
         sub: "Chat with us anytime",
         href: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`,
         bg: "#25D366",
