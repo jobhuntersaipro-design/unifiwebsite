@@ -127,7 +127,6 @@ const plans: Plan[] = [
             base: 149,
             bundlePrices: { "netflix-std": 193 },
             addons: [
-                { id: "ipad-11", label: 'iPad 11" A16 128GB', addPrice: 10 },
                 { id: "tv-55", label: '55" TV', addPrice: 10 },
                 { id: "tv-65-500", label: '65" TV', addPrice: 20 },
             ],

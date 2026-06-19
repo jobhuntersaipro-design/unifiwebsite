@@ -537,9 +537,10 @@ h3 {
   .hero-trust-badges {
     justify-content: center !important;
   }
-  .hero-personal-ipad {
-    width: 220px !important;
-    height: 220px !important;
+  .hero-personal-tv {
+    width: 100% !important;
+    max-width: 440px;
+    height: 270px !important;
     margin: 0 auto;
   }
 }
