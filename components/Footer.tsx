@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { fireWhatsAppConversion } from "@/lib/gtag";
 
@@ -81,16 +82,18 @@ export default function Footer() {
                         Quick Links
                     </p>
                     <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px" }}>
+                        {/*
+                          * These point at our own plan pages, not unifi.com.my. They previously
+                          * linked to TM's product pages, which sent visitors — including paid
+                          * traffic — somewhere they could sign up directly and we earn nothing.
+                          */}
                         {[
-                            { label: "Personal Plans", href: "https://unifi.com.my/all-in-one" },
-                            { label: "Business Broadband", href: "https://biz.unifi.com.my/products/unifi-business-fibre" },
-                            { label: "Unifi Air Biz", href: "https://biz.unifi.com.my/products/wireless-broadband-unifi-air" },
+                            { label: "Personal Plans", href: "/personal" },
+                            { label: "Business Broadband", href: "/business" },
                         ].map((link) => (
                             <li key={link.label}>
-                                <a
+                                <Link
                                     href={link.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
                                     style={{
                                         fontFamily: "Roboto, sans-serif",
                                         fontWeight: 400,
@@ -103,7 +106,7 @@ export default function Footer() {
                                     onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.7)")}
                                 >
                                     {link.label}
-                                </a>
+                                </Link>
                             </li>
                         ))}
                     </ul>
