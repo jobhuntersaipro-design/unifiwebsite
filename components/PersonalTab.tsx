@@ -55,6 +55,7 @@ type Plan = {
     includes: string[];
     bundles: BundleOption[];
     devicePricing: DevicePricing | null;
+    freeDevice: string | null;
     msg: string;
 };
 
@@ -87,6 +88,7 @@ const plans: Plan[] = [
             { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 29.90, bundleTotal: "118.90", features: NETFLIX_BASIC_FEATURES },
         ],
         devicePricing: null,
+        freeDevice: "Smart Home Advance",
         msg: "Hi, I'm interested in the Unifi UniVerse 100 (RM89/mth) plan. Can you help?",
     },
     {
@@ -106,9 +108,10 @@ const plans: Plan[] = [
             base: 129,
             bundlePrices: { "netflix-basic": 155, "hbo-max": 153 },
             addons: [
-                { id: "tv-43", label: '43" TV', addPrice: 10 },
+                { id: "tv-43", label: '43" TV', addPrice: 20 },
             ],
         },
+        freeDevice: "Smart Home Premium",
         msg: "Hi, I'm interested in the Unifi UniVerse 300 (RM129/mth) plan. Can you help?",
     },
     {
@@ -127,10 +130,11 @@ const plans: Plan[] = [
             base: 149,
             bundlePrices: { "netflix-std": 193 },
             addons: [
-                { id: "tv-55", label: '55" TV', addPrice: 10 },
-                { id: "tv-65-500", label: '65" TV', addPrice: 20 },
+                { id: "tv-55", label: '55" TV', addPrice: 20 },
+                { id: "tv-65-500", label: '65" TV', addPrice: 40 },
             ],
         },
+        freeDevice: null,
         msg: "Hi, I'm interested in the Unifi UniVerse 500 (RM149/mth) plan. Can you help?",
     },
     {
@@ -149,10 +153,11 @@ const plans: Plan[] = [
             base: 249,
             bundlePrices: { "netflix-std": 283 },
             addons: [
-                { id: "tv-65-1g", label: '65" TV', addPrice: 10 },
-                { id: "tv-75", label: '75" TV', addPrice: 20 },
+                { id: "tv-65-1g", label: '65" TV', addPrice: 20 },
+                { id: "tv-75", label: '75" TV', addPrice: 40 },
             ],
         },
+        freeDevice: null,
         msg: "Hi, I'm interested in the Unifi UniVerse 1Gbps (RM249/mth) plan. Can you help?",
     },
     {
@@ -168,6 +173,7 @@ const plans: Plan[] = [
             { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 44.90, bundleTotal: "363.90", features: NETFLIX_STD_FEATURES },
         ],
         devicePricing: null,
+        freeDevice: null,
         msg: "Hi, I'm interested in the Unifi UniVerse 2Gbps (RM319/mth) plan. Can you help?",
     },
 ];
@@ -278,7 +284,8 @@ function PlanCard({ plan }: { plan: Plan }) {
     const devicePart = chosenDevice
         ? ` + ${chosenDevice.label} device add-on (+RM${chosenDevice.addPrice}/mth, 3-year contract, delivery 2–4 weeks after installation)`
         : "";
-    const waMsg = plan.msg.replace("Can you help?", `${bundlePart}${devicePart}. Can you help?`);
+    const freePart = plan.freeDevice ? ` (includes FREE ${plan.freeDevice} bundle)` : "";
+    const waMsg = plan.msg.replace("Can you help?", `${bundlePart}${devicePart}${freePart}. Can you help?`);
 
     return (
         <div
@@ -399,7 +406,7 @@ function PlanCard({ plan }: { plan: Plan }) {
             </div>
 
             {/* Device Add-on — Limited Time Promo */}
-            {plan.devicePricing && (
+            {(plan.devicePricing || plan.freeDevice) && (
                 <div style={{ padding: "0 20px 14px" }}>
                     <div style={{
                         border: "1.5px solid rgba(255,94,0,0.4)", borderRadius: "10px", padding: "4px 12px 10px",
@@ -441,12 +448,30 @@ function PlanCard({ plan }: { plan: Plan }) {
                                     fontFamily: "Inter, sans-serif", fontWeight: 800,
                                     fontSize: "11px", color: "white", letterSpacing: "0.05em",
                                     textTransform: "uppercase",
-                                }}>🎁 Add-on device</span>
+                                }}>{plan.devicePricing ? "🎁 Add-on device" : "🎁 Free device"}</span>
                             </div>
 
                             {/* Device options */}
                             <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: "8px", background: "#fff8f4" }}>
-                                {plan.devicePricing.addons.map((d) => {
+                                {plan.freeDevice && (
+                                    <div style={{
+                                        display: "flex", alignItems: "center", gap: "10px",
+                                        border: "1.5px solid #a8dcb5", borderRadius: "8px", padding: "9px 12px",
+                                        background: "#f2fbf4",
+                                    }}>
+                                        <span style={{ fontSize: "15px", lineHeight: 1 }}>🏠</span>
+                                        <span style={{
+                                            fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                            fontSize: "13px", color: "#222", flex: 1,
+                                        }}>{plan.freeDevice}</span>
+                                        <span style={{
+                                            fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                            fontSize: "12px", color: "#189a46", whiteSpace: "nowrap",
+                                            background: "rgba(24,154,70,0.1)", padding: "2px 8px", borderRadius: "20px",
+                                        }}>FREE</span>
+                                    </div>
+                                )}
+                                {plan.devicePricing?.addons.map((d) => {
                                     const isSelected = selectedDevice === d.id;
                                     return (
                                         <div
