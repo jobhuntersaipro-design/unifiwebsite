@@ -145,7 +145,7 @@ const plans: Plan[] = [
         promo: "",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
-        includes: ["1Gbps / 500Mbps", "Wi-Fi 7 Combo Box + Mesh", "12-hr priority service restoration"],
+        includes: ["1Gbps / 500Mbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
         bundles: [
             { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 44.90, bundleTotal: "293.90", features: NETFLIX_STD_FEATURES },
         ],
@@ -168,7 +168,7 @@ const plans: Plan[] = [
         promo: "",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
-        includes: ["2Gbps / 1Gbps", "Wi-Fi 7 Combo Box + Mesh", "12-hr priority service restoration"],
+        includes: ["2Gbps / 1Gbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
         bundles: [
             { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 44.90, bundleTotal: "363.90", features: NETFLIX_STD_FEATURES },
         ],
