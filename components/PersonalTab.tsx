@@ -88,7 +88,7 @@ const plans: Plan[] = [
             { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 29.90, bundleTotal: "118.90", features: NETFLIX_BASIC_FEATURES },
         ],
         devicePricing: null,
-        freeDevice: "Smart Home Advance",
+        freeDevice: null,
         msg: "Hi, I'm interested in the Unifi UniVerse 100 (RM89/mth) plan. Can you help?",
     },
     {
@@ -108,10 +108,11 @@ const plans: Plan[] = [
             base: 129,
             bundlePrices: { "netflix-basic": 155, "hbo-max": 153 },
             addons: [
+                { id: "smart-home-premium", label: "Smart Home Premium", addPrice: 0 },
                 { id: "tv-43", label: '43" TV', addPrice: 20 },
             ],
         },
-        freeDevice: "Smart Home Premium",
+        freeDevice: null,
         msg: "Hi, I'm interested in the Unifi UniVerse 300 (RM129/mth) plan. Can you help?",
     },
     {
@@ -286,7 +287,7 @@ function PlanCard({ plan }: { plan: Plan }) {
 
     const bundlePart = chosen ? ` with ${chosen.label} bundle` : "";
     const devicePart = chosenDevice
-        ? ` + ${chosenDevice.label} device add-on promo (+RM${chosenDevice.addPrice}/mth${promoForfeited ? ", instead of the 6 Months Free promo" : ""}, 3-year contract, delivery 2–4 weeks after installation)`
+        ? ` + ${chosenDevice.label} device add-on promo (${chosenDevice.addPrice > 0 ? `+RM${chosenDevice.addPrice}/mth` : "FREE"}${promoForfeited ? ", instead of the 6 Months Free promo" : ""}, 3-year contract, delivery 2–4 weeks after installation)`
         : plan.promo
             ? ` with the ${plan.promo} promo`
             : "";
@@ -404,7 +405,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                                 fontFamily: "Inter, sans-serif", fontWeight: 700,
                                 fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
                             }}>
-                                {chosenDevice.label} +RM{chosenDevice.addPrice}/mth
+                                {chosenDevice.label}{chosenDevice.addPrice > 0 ? ` +RM${chosenDevice.addPrice}/mth` : " FREE"}
                             </div>
                         )}
                     </div>
@@ -542,10 +543,18 @@ function PlanCard({ plan }: { plan: Plan }) {
                                                     }}>Replaces {plan.promo}</span>
                                                 )}
                                             </div>
-                                            <span style={{
-                                                fontFamily: "Inter, sans-serif", fontWeight: 800,
-                                                fontSize: "12px", color: "var(--accent-orange)", whiteSpace: "nowrap",
-                                            }}>+RM{d.addPrice}/mth</span>
+                                            {d.addPrice > 0 ? (
+                                                <span style={{
+                                                    fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                                    fontSize: "12px", color: "var(--accent-orange)", whiteSpace: "nowrap",
+                                                }}>+RM{d.addPrice}/mth</span>
+                                            ) : (
+                                                <span style={{
+                                                    fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                                    fontSize: "12px", color: "#189a46", whiteSpace: "nowrap",
+                                                    background: "rgba(24,154,70,0.1)", padding: "2px 8px", borderRadius: "20px",
+                                                }}>FREE</span>
+                                            )}
                                         </div>
                                     );
                                 })}
