@@ -271,6 +271,10 @@ function PlanCard({ plan }: { plan: Plan }) {
     const chosen = plan.bundles.find((b) => b.id === selectedBundle);
     const chosenDevice = plan.devicePricing?.addons.find((d) => d.id === selectedDevice) ?? null;
 
+    // Promo is EITHER 6 months free OR a TV add-on — never both
+    const hasPromoChoice = Boolean(plan.promo && plan.devicePricing);
+    const promoForfeited = hasPromoChoice && chosenDevice !== null;
+
     const deviceBase = plan.devicePricing
         ? (selectedBundle && plan.devicePricing.bundlePrices[selectedBundle]
             ? plan.devicePricing.bundlePrices[selectedBundle]
@@ -282,8 +286,10 @@ function PlanCard({ plan }: { plan: Plan }) {
 
     const bundlePart = chosen ? ` with ${chosen.label} bundle` : "";
     const devicePart = chosenDevice
-        ? ` + ${chosenDevice.label} device add-on (+RM${chosenDevice.addPrice}/mth, 3-year contract, delivery 2–4 weeks after installation)`
-        : "";
+        ? ` + ${chosenDevice.label} device add-on promo (+RM${chosenDevice.addPrice}/mth${promoForfeited ? ", instead of the 6 Months Free promo" : ""}, 3-year contract, delivery 2–4 weeks after installation)`
+        : plan.promo
+            ? ` with the ${plan.promo} promo`
+            : "";
     const freePart = plan.freeDevice ? ` (includes FREE ${plan.freeDevice} bundle)` : "";
     const waMsg = plan.msg.replace("Can you help?", `${bundlePart}${devicePart}${freePart}. Can you help?`);
 
@@ -377,15 +383,30 @@ function PlanCard({ plan }: { plan: Plan }) {
                     <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "13px", color: "#888" }}>/mth</span>
                 </div>
 
-                {/* Free months promo pill — only shown when promo is set */}
+                {/* Promo pill — strikes through when a TV add-on replaces it */}
                 {plan.promo && (
-                    <div style={{
-                        marginTop: "8px", display: "inline-block",
-                        background: "rgba(255,122,0,0.1)", color: "var(--accent-orange)",
-                        fontFamily: "Inter, sans-serif", fontWeight: 700,
-                        fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
-                    }}>
-                        {plan.promo}
+                    <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+                        <div style={{
+                            display: "inline-block",
+                            background: promoForfeited ? "#f0f0f0" : "rgba(255,122,0,0.1)",
+                            color: promoForfeited ? "#aaa" : "var(--accent-orange)",
+                            textDecoration: promoForfeited ? "line-through" : "none",
+                            fontFamily: "Inter, sans-serif", fontWeight: 700,
+                            fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
+                            transition: "all 0.2s",
+                        }}>
+                            {plan.promo}
+                        </div>
+                        {promoForfeited && chosenDevice && (
+                            <div style={{
+                                display: "inline-block",
+                                background: "rgba(255,122,0,0.1)", color: "var(--accent-orange)",
+                                fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
+                            }}>
+                                {chosenDevice.label} +RM{chosenDevice.addPrice}/mth
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -448,22 +469,35 @@ function PlanCard({ plan }: { plan: Plan }) {
                                     fontFamily: "Inter, sans-serif", fontWeight: 800,
                                     fontSize: "11px", color: "white", letterSpacing: "0.05em",
                                     textTransform: "uppercase",
-                                }}>{plan.devicePricing ? "🎁 Add-on device" : "🎁 Free device"}</span>
+                                }}>{hasPromoChoice ? "🎁 Choose your promo — pick one" : plan.devicePricing ? "🎁 Add-on device" : "🎁 Free device"}</span>
                             </div>
 
                             {/* Device options */}
                             <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: "8px", background: "#fff8f4" }}>
-                                {plan.freeDevice && (
-                                    <div style={{
-                                        display: "flex", alignItems: "center", gap: "10px",
-                                        border: "1.5px solid #a8dcb5", borderRadius: "8px", padding: "9px 12px",
-                                        background: "#f2fbf4",
-                                    }}>
-                                        <span style={{ fontSize: "15px", lineHeight: 1 }}>🏠</span>
+                                {hasPromoChoice && (
+                                    <div
+                                        onClick={(e) => { e.stopPropagation(); setSelectedDevice(null); }}
+                                        style={{
+                                            display: "flex", alignItems: "center", gap: "10px",
+                                            border: !selectedDevice ? "2px solid var(--accent-orange)" : "1.5px solid #f0c8a0",
+                                            borderRadius: "8px", padding: "9px 12px",
+                                            background: !selectedDevice ? "rgba(255,94,0,0.07)" : "white",
+                                            cursor: "pointer", transition: "all 0.2s",
+                                        }}
+                                    >
+                                        <div style={{
+                                            width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
+                                            border: !selectedDevice ? "2px solid var(--accent-orange)" : "2px solid #ccc",
+                                            background: !selectedDevice ? "var(--accent-orange)" : "transparent",
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            transition: "all 0.2s",
+                                        }}>
+                                            {!selectedDevice && <Check size={10} color="#fff" strokeWidth={3} />}
+                                        </div>
                                         <span style={{
                                             fontFamily: "Inter, sans-serif", fontWeight: 700,
                                             fontSize: "13px", color: "#222", flex: 1,
-                                        }}>{plan.freeDevice}</span>
+                                        }}>{plan.promo}</span>
                                         <span style={{
                                             fontFamily: "Inter, sans-serif", fontWeight: 800,
                                             fontSize: "12px", color: "#189a46", whiteSpace: "nowrap",
@@ -494,10 +528,20 @@ function PlanCard({ plan }: { plan: Plan }) {
                                             }}>
                                                 {isSelected && <Check size={10} color="#fff" strokeWidth={3} />}
                                             </div>
-                                            <span style={{
-                                                fontFamily: "Inter, sans-serif", fontWeight: 700,
-                                                fontSize: "13px", color: "#222", flex: 1,
-                                            }}>{d.label}</span>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                <span style={{
+                                                    display: "block",
+                                                    fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                                    fontSize: "13px", color: "#222",
+                                                }}>{d.label}</span>
+                                                {hasPromoChoice && (
+                                                    <span style={{
+                                                        display: "block",
+                                                        fontFamily: "Roboto, sans-serif", fontWeight: 400,
+                                                        fontSize: "10.5px", color: "#999", marginTop: "1px",
+                                                    }}>Replaces {plan.promo}</span>
+                                                )}
+                                            </div>
                                             <span style={{
                                                 fontFamily: "Inter, sans-serif", fontWeight: 800,
                                                 fontSize: "12px", color: "var(--accent-orange)", whiteSpace: "nowrap",
@@ -505,6 +549,35 @@ function PlanCard({ plan }: { plan: Plan }) {
                                         </div>
                                     );
                                 })}
+
+                                {plan.freeDevice && (
+                                    <div style={{
+                                        display: "flex", alignItems: "center", gap: "10px",
+                                        border: "1.5px solid #a8dcb5", borderRadius: "8px", padding: "9px 12px",
+                                        background: "#f2fbf4",
+                                    }}>
+                                        <span style={{ fontSize: "15px", lineHeight: 1 }}>🏠</span>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <span style={{
+                                                display: "block",
+                                                fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                                fontSize: "13px", color: "#222",
+                                            }}>{plan.freeDevice}</span>
+                                            {hasPromoChoice && (
+                                                <span style={{
+                                                    display: "block",
+                                                    fontFamily: "Roboto, sans-serif", fontWeight: 400,
+                                                    fontSize: "10.5px", color: "#3a9d5c", marginTop: "1px",
+                                                }}>Always included — no need to choose</span>
+                                            )}
+                                        </div>
+                                        <span style={{
+                                            fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                            fontSize: "12px", color: "#189a46", whiteSpace: "nowrap",
+                                            background: "rgba(24,154,70,0.1)", padding: "2px 8px", borderRadius: "20px",
+                                        }}>FREE</span>
+                                    </div>
+                                )}
 
                                 {/* Contract note */}
                                 <p style={{
@@ -618,7 +691,7 @@ export default function PersonalTab() {
                         fontSize: "15px", padding: "9px 22px", borderRadius: "24px",
                         letterSpacing: "0.01em",
                     }}>
-                        ✦ Exclusive promo — 6 Months FREE on selected plans
+                        ✦ Exclusive promo — 6 Months FREE or a TV add-on deal on selected plans
                     </div>
                 </div>
 
