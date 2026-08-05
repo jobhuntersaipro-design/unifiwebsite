@@ -143,7 +143,7 @@ const plans: Plan[] = [
         name: "UniVerse 1Gbps",
         speed: "1", unit: "Gbps",
         price: "249", wasPrice: "289",
-        promo: "",
+        promo: "6 Months Free",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["1Gbps / 500Mbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
