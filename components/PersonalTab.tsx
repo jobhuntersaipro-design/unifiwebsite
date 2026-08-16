@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { fireWhatsAppConversion } from "@/lib/gtag";
-import { Check, Wifi, ChevronDown, ChevronUp, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, Wifi, ChevronDown, ChevronUp, Star, ChevronLeft, ChevronRight, Cctv } from "lucide-react";
 import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -48,6 +48,14 @@ type Plan = {
     price: string;
     wasPrice: string | null;
     promo: string;
+    /** Intro monthly rate while the promo is active (e.g. "59" for 10 months). */
+    promoPrice: string | null;
+    /** Fine print under the price when the intro rate is showing. */
+    promoNote: string | null;
+    /** Free hardware bundled with the promo, shown as its own badge. */
+    promoGift: { label: string; unit: string } | null;
+    /** Compact promo name for tight spots (e.g. "Replaces …"). */
+    promoShort: string | null;
     color: string;
     lightBg: string;
     border: string;
@@ -80,7 +88,7 @@ const plans: Plan[] = [
         name: "UniVerse 100",
         speed: "100", unit: "Mbps",
         price: "89", wasPrice: "99",
-        promo: "6 Months Free",
+        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["100Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -96,7 +104,11 @@ const plans: Plan[] = [
         name: "UniVerse 300",
         speed: "300", unit: "Mbps",
         price: "129", wasPrice: "139",
-        promo: "6 Months Free",
+        promo: "RM59/mth for first 10 months",
+        promoPrice: "59",
+        promoNote: "First 10 months, then RM129/mth",
+        promoGift: { label: "Free CCTV", unit: "1 unit included" },
+        promoShort: "RM59 intro + CCTV",
         color: POPULAR_COLOR, lightBg: POPULAR_LIGHT_BG, border: POPULAR_BORDER,
         popular: true,
         includes: ["300Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -120,7 +132,11 @@ const plans: Plan[] = [
         name: "UniVerse 500",
         speed: "500", unit: "Mbps",
         price: "149", wasPrice: "159",
-        promo: "6 Months Free",
+        promo: "RM79/mth for first 10 months",
+        promoPrice: "79",
+        promoNote: "First 10 months, then RM149/mth",
+        promoGift: { label: "Free CCTV", unit: "1 unit included" },
+        promoShort: "RM79 intro + CCTV",
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["500Mbps / 100Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -143,7 +159,7 @@ const plans: Plan[] = [
         name: "UniVerse 1Gbps",
         speed: "1", unit: "Gbps",
         price: "249", wasPrice: "289",
-        promo: "6 Months Free",
+        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["1Gbps / 500Mbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
@@ -166,7 +182,7 @@ const plans: Plan[] = [
         name: "UniVerse 2Gbps",
         speed: "2", unit: "Gbps",
         price: "319", wasPrice: null,
-        promo: "",
+        promo: "", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["2Gbps / 1Gbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
@@ -272,7 +288,7 @@ function PlanCard({ plan }: { plan: Plan }) {
     const chosen = plan.bundles.find((b) => b.id === selectedBundle);
     const chosenDevice = plan.devicePricing?.addons.find((d) => d.id === selectedDevice) ?? null;
 
-    // Promo is EITHER 6 months free OR a TV add-on — never both
+    // Promo is EITHER the headline promo OR a TV add-on — never both
     const hasPromoChoice = Boolean(plan.promo && plan.devicePricing);
     const promoForfeited = hasPromoChoice && chosenDevice !== null;
 
@@ -283,13 +299,24 @@ function PlanCard({ plan }: { plan: Plan }) {
         : 0;
 
     const displayPrice = chosen ? chosen.bundleTotal : plan.price;
-    const finalPrice = chosenDevice ? `${deviceBase + chosenDevice.addPrice}` : displayPrice;
+
+    // Intro rate applies only while the promo is the active choice
+    const introActive = Boolean(plan.promoPrice) && !promoForfeited;
+    const introPrice = introActive
+        ? `${Number(plan.promoPrice) + (chosen?.addPrice ?? 0)}`
+        : null;
+
+    const finalPrice = chosenDevice
+        ? `${deviceBase + chosenDevice.addPrice}`
+        : introPrice ?? displayPrice;
+    // While the intro rate shows, strike the regular rate instead of the RRP
+    const strikePrice = introPrice ? displayPrice : plan.wasPrice;
 
     const bundlePart = chosen ? ` with ${chosen.label} bundle` : "";
     const devicePart = chosenDevice
-        ? ` + ${chosenDevice.label} device add-on promo (${chosenDevice.addPrice > 0 ? `+RM${chosenDevice.addPrice}/mth` : "FREE"}${promoForfeited ? ", instead of the 6 Months Free promo" : ""}, 3-year contract, delivery 2–4 weeks after installation)`
+        ? ` + ${chosenDevice.label} device add-on promo (${chosenDevice.addPrice > 0 ? `+RM${chosenDevice.addPrice}/mth` : "FREE"}${promoForfeited ? `, instead of the ${plan.promo} promo` : ""}, 3-year contract, delivery 2–4 weeks after installation)`
         : plan.promo
-            ? ` with the ${plan.promo} promo`
+            ? ` with the ${plan.promo}${plan.promoGift ? ` + ${plan.promoGift.label}` : ""} promo`
             : "";
     const freePart = plan.freeDevice ? ` (includes FREE ${plan.freeDevice} bundle)` : "";
     const waMsg = plan.msg.replace("Can you help?", `${bundlePart}${devicePart}${freePart}. Can you help?`);
@@ -360,12 +387,12 @@ function PlanCard({ plan }: { plan: Plan }) {
 
                 {/* Original Price Strikethrough (Or Invisible exact copy to force perfect height alignment) */}
                 <div style={{ marginBottom: "4px" }}>
-                    {plan.wasPrice ? (
+                    {strikePrice ? (
                         <span style={{
                             fontFamily: "Inter, sans-serif", fontSize: "14px", fontWeight: 600,
                             color: "#a0a0a0", textDecoration: "line-through",
                         }}>
-                            RM{plan.wasPrice}
+                            RM{strikePrice}
                         </span>
                     ) : (
                         <span style={{
@@ -384,20 +411,62 @@ function PlanCard({ plan }: { plan: Plan }) {
                     <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "13px", color: "#888" }}>/mth</span>
                 </div>
 
+                {/* Intro-rate fine print */}
+                {introPrice && plan.promoNote && (
+                    <p style={{
+                        fontFamily: "Roboto, sans-serif", fontSize: "11px",
+                        color: "#777", margin: "5px 0 0", lineHeight: 1.4,
+                    }}>
+                        {plan.promoNote}
+                    </p>
+                )}
+
                 {/* Promo pill — strikes through when a TV add-on replaces it */}
                 {plan.promo && (
                     <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
-                        <div style={{
-                            display: "inline-block",
-                            background: promoForfeited ? "#f0f0f0" : "rgba(255,122,0,0.1)",
-                            color: promoForfeited ? "#aaa" : "var(--accent-orange)",
-                            textDecoration: promoForfeited ? "line-through" : "none",
-                            fontFamily: "Inter, sans-serif", fontWeight: 700,
-                            fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
-                            transition: "all 0.2s",
-                        }}>
-                            {plan.promo}
-                        </div>
+                        {/* The intro price + fine print above already state the offer, so the
+                            text pill only earns its place once the offer is struck out. */}
+                        {(!introPrice || promoForfeited) && (
+                            <div style={{
+                                display: "inline-block",
+                                background: promoForfeited ? "#f0f0f0" : "rgba(255,122,0,0.1)",
+                                color: promoForfeited ? "#aaa" : "var(--accent-orange)",
+                                textDecoration: promoForfeited ? "line-through" : "none",
+                                fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
+                                transition: "all 0.2s",
+                                maxWidth: "100%", overflowWrap: "anywhere",
+                            }}>
+                                {plan.promo}
+                            </div>
+                        )}
+                        {plan.promoGift && (
+                            <div style={{
+                                display: "inline-flex", alignItems: "center", gap: "6px",
+                                background: promoForfeited ? "#f2f2f2" : "#eaf7ee",
+                                border: `1.5px solid ${promoForfeited ? "#e2e2e2" : "#9fd8b2"}`,
+                                color: promoForfeited ? "#aaa" : "#0f7a37",
+                                padding: "4px 11px 4px 5px", borderRadius: "20px",
+                                textDecoration: promoForfeited ? "line-through" : "none",
+                                transition: "all 0.2s", maxWidth: "100%",
+                            }}>
+                                <span style={{
+                                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                                    width: "20px", height: "20px", borderRadius: "50%", flexShrink: 0,
+                                    background: promoForfeited ? "#e2e2e2" : "#189a46", color: "#fff",
+                                }}>
+                                    <Cctv size={12} strokeWidth={2.5} aria-hidden="true" />
+                                </span>
+                                <span style={{
+                                    fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                    fontSize: "11.5px", letterSpacing: "0.01em",
+                                }}>{plan.promoGift.label}</span>
+                                <span style={{
+                                    fontFamily: "Roboto, sans-serif", fontWeight: 400,
+                                    fontSize: "10.5px", whiteSpace: "nowrap",
+                                }}>· {plan.promoGift.unit}</span>
+                            </div>
+                        )}
                         {promoForfeited && chosenDevice && (
                             <div style={{
                                 display: "inline-block",
@@ -495,15 +564,31 @@ function PlanCard({ plan }: { plan: Plan }) {
                                         }}>
                                             {!selectedDevice && <Check size={10} color="#fff" strokeWidth={3} />}
                                         </div>
-                                        <span style={{
-                                            fontFamily: "Inter, sans-serif", fontWeight: 700,
-                                            fontSize: "13px", color: "#222", flex: 1,
-                                        }}>{plan.promo}</span>
-                                        <span style={{
-                                            fontFamily: "Inter, sans-serif", fontWeight: 800,
-                                            fontSize: "12px", color: "#189a46", whiteSpace: "nowrap",
-                                            background: "rgba(24,154,70,0.1)", padding: "2px 8px", borderRadius: "20px",
-                                        }}>FREE</span>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <span style={{
+                                                display: "block",
+                                                fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                                fontSize: "13px", color: "#222",
+                                            }}>{plan.promo}</span>
+                                            {plan.promoGift && (
+                                                <span style={{
+                                                    display: "flex", alignItems: "center", gap: "4px",
+                                                    fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                                    fontSize: "11px", color: "#0f7a37", marginTop: "3px",
+                                                }}>
+                                                    <Cctv size={12} strokeWidth={2.5} style={{ flexShrink: 0 }} aria-hidden="true" />
+                                                    + {plan.promoGift.label}
+                                                </span>
+                                            )}
+                                        </div>
+                                        {!plan.promoGift && (
+                                            <span style={{
+                                                fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                                fontSize: "12px", color: "#189a46", whiteSpace: "nowrap",
+                                                background: "rgba(24,154,70,0.1)", padding: "2px 8px", borderRadius: "20px",
+                                                flexShrink: 0,
+                                            }}>FREE</span>
+                                        )}
                                     </div>
                                 )}
                                 {plan.devicePricing?.addons.map((d) => {
@@ -540,7 +625,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                                                         display: "block",
                                                         fontFamily: "Roboto, sans-serif", fontWeight: 400,
                                                         fontSize: "10.5px", color: "#999", marginTop: "1px",
-                                                    }}>Replaces {plan.promo}</span>
+                                                    }}>Replaces {plan.promoShort ?? plan.promo}</span>
                                                 )}
                                             </div>
                                             {d.addPrice > 0 ? (
@@ -700,7 +785,7 @@ export default function PersonalTab() {
                         fontSize: "15px", padding: "9px 22px", borderRadius: "24px",
                         letterSpacing: "0.01em",
                     }}>
-                        ✦ Exclusive promo — 6 Months FREE or a TV add-on deal on selected plans
+                        ✦ Exclusive promo — intro rates from RM59/mth + FREE CCTV, 6 Months FREE, or a TV add-on deal on selected plans
                     </div>
                 </div>
 
