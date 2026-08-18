@@ -56,6 +56,8 @@ type Plan = {
     promoGift: { label: string; unit: string } | null;
     /** Compact promo name for tight spots (e.g. "Replaces …"). */
     promoShort: string | null;
+    /** Extra pick-one promos that swap out the headline promo but cost nothing. */
+    altPromos: { id: string; label: string; note: string }[];
     color: string;
     lightBg: string;
     border: string;
@@ -88,7 +90,7 @@ const plans: Plan[] = [
         name: "UniVerse 100",
         speed: "100", unit: "Mbps",
         price: "89", wasPrice: "99",
-        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
+        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null, altPromos: [],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["100Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -109,6 +111,7 @@ const plans: Plan[] = [
         promoNote: "First 10 months, then RM129/mth",
         promoGift: { label: "Free CCTV", unit: "1 unit included" },
         promoShort: "RM59 intro + CCTV",
+        altPromos: [{ id: "six-months-free", label: "6 Months Free", note: "First 6 months free, then RM129/mth" }],
         color: POPULAR_COLOR, lightBg: POPULAR_LIGHT_BG, border: POPULAR_BORDER,
         popular: true,
         includes: ["300Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -137,6 +140,7 @@ const plans: Plan[] = [
         promoNote: "First 10 months, then RM149/mth",
         promoGift: { label: "Free CCTV", unit: "1 unit included" },
         promoShort: "RM79 intro + CCTV",
+        altPromos: [{ id: "six-months-free", label: "6 Months Free", note: "First 6 months free, then RM149/mth" }],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["500Mbps / 100Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
@@ -159,7 +163,7 @@ const plans: Plan[] = [
         name: "UniVerse 1Gbps",
         speed: "1", unit: "Gbps",
         price: "249", wasPrice: "289",
-        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
+        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null, altPromos: [],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["1Gbps / 500Mbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
@@ -182,7 +186,7 @@ const plans: Plan[] = [
         name: "UniVerse 2Gbps",
         speed: "2", unit: "Gbps",
         price: "319", wasPrice: null,
-        promo: "", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
+        promo: "", promoPrice: null, promoNote: null, promoGift: null, promoShort: null, altPromos: [],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["2Gbps / 1Gbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
@@ -284,13 +288,17 @@ function PlanCard({ plan }: { plan: Plan }) {
     const [selectedBundle, setSelectedBundle] = useState<string | null>(null);
     const [deviceOpen, setDeviceOpen] = useState(true);
     const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+    const [selectedAlt, setSelectedAlt] = useState<string | null>(null);
 
     const chosen = plan.bundles.find((b) => b.id === selectedBundle);
     const chosenDevice = plan.devicePricing?.addons.find((d) => d.id === selectedDevice) ?? null;
+    const chosenAlt = plan.altPromos.find((a) => a.id === selectedAlt) ?? null;
 
-    // Promo is EITHER the headline promo OR a TV add-on — never both
-    const hasPromoChoice = Boolean(plan.promo && plan.devicePricing);
-    const promoForfeited = hasPromoChoice && chosenDevice !== null;
+    // Exactly one promo applies: the headline promo, an alternative promo, or a TV add-on
+    const hasPromoChoice = Boolean(plan.promo && (plan.devicePricing || plan.altPromos.length));
+    const promoForfeited = hasPromoChoice && (chosenDevice !== null || chosenAlt !== null);
+    const pickHeadline = () => { setSelectedDevice(null); setSelectedAlt(null); };
+    const headlinePicked = !selectedDevice && !selectedAlt;
 
     const deviceBase = plan.devicePricing
         ? (selectedBundle && plan.devicePricing.bundlePrices[selectedBundle]
@@ -311,13 +319,16 @@ function PlanCard({ plan }: { plan: Plan }) {
         : introPrice ?? displayPrice;
     // While the intro rate shows, strike the regular rate instead of the RRP
     const strikePrice = introPrice ? displayPrice : plan.wasPrice;
+    const priceNote = introPrice ? plan.promoNote : chosenAlt?.note ?? null;
 
     const bundlePart = chosen ? ` with ${chosen.label} bundle` : "";
     const devicePart = chosenDevice
         ? ` + ${chosenDevice.label} device add-on promo (${chosenDevice.addPrice > 0 ? `+RM${chosenDevice.addPrice}/mth` : "FREE"}${promoForfeited ? `, instead of the ${plan.promo} promo` : ""}, 3-year contract, delivery 2–4 weeks after installation)`
-        : plan.promo
-            ? ` with the ${plan.promo}${plan.promoGift ? ` + ${plan.promoGift.label}` : ""} promo`
-            : "";
+        : chosenAlt
+            ? ` with the ${chosenAlt.label} promo (instead of the ${plan.promoShort ?? plan.promo} promo)`
+            : plan.promo
+                ? ` with the ${plan.promo}${plan.promoGift ? ` + ${plan.promoGift.label}` : ""} promo`
+                : "";
     const freePart = plan.freeDevice ? ` (includes FREE ${plan.freeDevice} bundle)` : "";
     const waMsg = plan.msg.replace("Can you help?", `${bundlePart}${devicePart}${freePart}. Can you help?`);
 
@@ -411,13 +422,13 @@ function PlanCard({ plan }: { plan: Plan }) {
                     <span style={{ fontFamily: "Roboto, sans-serif", fontSize: "13px", color: "#888" }}>/mth</span>
                 </div>
 
-                {/* Intro-rate fine print */}
-                {introPrice && plan.promoNote && (
+                {/* Fine print for whichever promo is active */}
+                {priceNote && (
                     <p style={{
                         fontFamily: "Roboto, sans-serif", fontSize: "11px",
                         color: "#777", margin: "5px 0 0", lineHeight: 1.4,
                     }}>
-                        {plan.promoNote}
+                        {priceNote}
                     </p>
                 )}
 
@@ -465,6 +476,16 @@ function PlanCard({ plan }: { plan: Plan }) {
                                     fontFamily: "Roboto, sans-serif", fontWeight: 400,
                                     fontSize: "10.5px", whiteSpace: "nowrap",
                                 }}>· {plan.promoGift.unit}</span>
+                            </div>
+                        )}
+                        {chosenAlt && (
+                            <div style={{
+                                display: "inline-block",
+                                background: "rgba(255,122,0,0.1)", color: "var(--accent-orange)",
+                                fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
+                            }}>
+                                {chosenAlt.label}
                             </div>
                         )}
                         {promoForfeited && chosenDevice && (
@@ -546,23 +567,23 @@ function PlanCard({ plan }: { plan: Plan }) {
                             <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: "8px", background: "#fff8f4" }}>
                                 {hasPromoChoice && (
                                     <div
-                                        onClick={(e) => { e.stopPropagation(); setSelectedDevice(null); }}
+                                        onClick={(e) => { e.stopPropagation(); pickHeadline(); }}
                                         style={{
                                             display: "flex", alignItems: "center", gap: "10px",
-                                            border: !selectedDevice ? "2px solid var(--accent-orange)" : "1.5px solid #f0c8a0",
+                                            border: headlinePicked ? "2px solid var(--accent-orange)" : "1.5px solid #f0c8a0",
                                             borderRadius: "8px", padding: "9px 12px",
-                                            background: !selectedDevice ? "rgba(255,94,0,0.07)" : "white",
+                                            background: headlinePicked ? "rgba(255,94,0,0.07)" : "white",
                                             cursor: "pointer", transition: "all 0.2s",
                                         }}
                                     >
                                         <div style={{
                                             width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
-                                            border: !selectedDevice ? "2px solid var(--accent-orange)" : "2px solid #ccc",
-                                            background: !selectedDevice ? "var(--accent-orange)" : "transparent",
+                                            border: headlinePicked ? "2px solid var(--accent-orange)" : "2px solid #ccc",
+                                            background: headlinePicked ? "var(--accent-orange)" : "transparent",
                                             display: "flex", alignItems: "center", justifyContent: "center",
                                             transition: "all 0.2s",
                                         }}>
-                                            {!selectedDevice && <Check size={10} color="#fff" strokeWidth={3} />}
+                                            {headlinePicked && <Check size={10} color="#fff" strokeWidth={3} />}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <span style={{
@@ -591,12 +612,56 @@ function PlanCard({ plan }: { plan: Plan }) {
                                         )}
                                     </div>
                                 )}
+                                {plan.altPromos.map((a) => {
+                                    const isSelected = selectedAlt === a.id;
+                                    return (
+                                        <div
+                                            key={a.id}
+                                            onClick={(e) => { e.stopPropagation(); setSelectedDevice(null); setSelectedAlt((prev) => prev === a.id ? null : a.id); }}
+                                            style={{
+                                                display: "flex", alignItems: "center", gap: "10px",
+                                                border: isSelected ? "2px solid var(--accent-orange)" : "1.5px solid #f0c8a0",
+                                                borderRadius: "8px", padding: "9px 12px",
+                                                background: isSelected ? "rgba(255,94,0,0.07)" : "white",
+                                                cursor: "pointer", transition: "all 0.2s",
+                                            }}
+                                        >
+                                            <div style={{
+                                                width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
+                                                border: isSelected ? "2px solid var(--accent-orange)" : "2px solid #ccc",
+                                                background: isSelected ? "var(--accent-orange)" : "transparent",
+                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                transition: "all 0.2s",
+                                            }}>
+                                                {isSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+                                            </div>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                <span style={{
+                                                    display: "block",
+                                                    fontFamily: "Inter, sans-serif", fontWeight: 700,
+                                                    fontSize: "13px", color: "#222",
+                                                }}>{a.label}</span>
+                                                <span style={{
+                                                    display: "block",
+                                                    fontFamily: "Roboto, sans-serif", fontWeight: 400,
+                                                    fontSize: "10.5px", color: "#999", marginTop: "1px",
+                                                }}>Replaces {plan.promoShort ?? plan.promo}</span>
+                                            </div>
+                                            <span style={{
+                                                fontFamily: "Inter, sans-serif", fontWeight: 800,
+                                                fontSize: "12px", color: "#189a46", whiteSpace: "nowrap",
+                                                background: "rgba(24,154,70,0.1)", padding: "2px 8px", borderRadius: "20px",
+                                                flexShrink: 0,
+                                            }}>FREE</span>
+                                        </div>
+                                    );
+                                })}
                                 {plan.devicePricing?.addons.map((d) => {
                                     const isSelected = selectedDevice === d.id;
                                     return (
                                         <div
                                             key={d.id}
-                                            onClick={(e) => { e.stopPropagation(); setSelectedDevice((prev) => prev === d.id ? null : d.id); }}
+                                            onClick={(e) => { e.stopPropagation(); setSelectedAlt(null); setSelectedDevice((prev) => prev === d.id ? null : d.id); }}
                                             style={{
                                                 display: "flex", alignItems: "center", gap: "10px",
                                                 border: isSelected ? "2px solid var(--accent-orange)" : "1.5px solid #f0c8a0",
