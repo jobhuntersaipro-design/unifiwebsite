@@ -28,6 +28,21 @@ type BundleOption = {
     features: string[];
 };
 
+/** Promo wording that swaps in once a streaming bundle is added. */
+type PromoVariant = {
+    label: string;
+    /** May contain "{price}" — replaced with the live monthly rate. */
+    note: string;
+};
+
+type AltPromo = {
+    id: string;
+    label: string;
+    note: string;
+    /** Reduced promo when a streaming bundle is added (e.g. 6 → 3 months free). */
+    withBundle: PromoVariant | null;
+};
+
 type DeviceAddon = {
     id: string;
     label: string;
@@ -56,8 +71,12 @@ type Plan = {
     promoGift: { label: string; unit: string } | null;
     /** Compact promo name for tight spots (e.g. "Replaces …"). */
     promoShort: string | null;
+    /** Reduced headline promo once a streaming bundle is added (e.g. 6 → 3 months free). */
+    promoWithBundle: PromoVariant | null;
+    /** The headline promo cannot be combined with a Netflix / HBO Max bundle. */
+    headlineBlocksBundles: boolean;
     /** Extra pick-one promos that swap out the headline promo but cost nothing. */
-    altPromos: { id: string; label: string; note: string }[];
+    altPromos: AltPromo[];
     color: string;
     lightBg: string;
     border: string;
@@ -90,12 +109,15 @@ const plans: Plan[] = [
         name: "UniVerse 100",
         speed: "100", unit: "Mbps",
         price: "89", wasPrice: "99",
-        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null, altPromos: [],
+        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
+        promoWithBundle: { label: "3 Months Free", note: "First 3 months free, then RM{price}/mth" },
+        headlineBlocksBundles: false, altPromos: [],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["100Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
         bundles: [
-            { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 29.90, bundleTotal: "118.90", features: NETFLIX_BASIC_FEATURES },
+            { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 29, bundleTotal: "118", features: NETFLIX_BASIC_FEATURES },
+            { id: "hbo-max", label: "HBO Max Standard", logo: "M", addPrice: 24, bundleTotal: "113", features: HBO_MAX_FEATURES },
         ],
         devicePricing: null,
         freeDevice: null,
@@ -111,13 +133,18 @@ const plans: Plan[] = [
         promoNote: "First 10 months, then RM129/mth",
         promoGift: { label: "Free CCTV", unit: "1 unit included" },
         promoShort: "RM59 intro + CCTV",
-        altPromos: [{ id: "six-months-free", label: "6 Months Free", note: "First 6 months free, then RM129/mth" }],
+        promoWithBundle: null,
+        headlineBlocksBundles: true,
+        altPromos: [{
+            id: "six-months-free", label: "6 Months Free", note: "First 6 months free, then RM129/mth",
+            withBundle: { label: "3 Months Free", note: "First 3 months free, then RM{price}/mth" },
+        }],
         color: POPULAR_COLOR, lightBg: POPULAR_LIGHT_BG, border: POPULAR_BORDER,
         popular: true,
         includes: ["300Mbps / 50Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
         bundles: [
-            { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 3.00, bundleTotal: "132", features: NETFLIX_BASIC_FEATURES },
-            { id: "hbo-max", label: "HBO Max Standard", logo: "M", addPrice: 3.00, bundleTotal: "132", features: HBO_MAX_FEATURES },
+            { id: "netflix-basic", label: "Netflix Basic", logo: "N", addPrice: 26, bundleTotal: "155", features: NETFLIX_BASIC_FEATURES },
+            { id: "hbo-max", label: "HBO Max Standard", logo: "M", addPrice: 24, bundleTotal: "153", features: HBO_MAX_FEATURES },
         ],
         devicePricing: {
             base: 129,
@@ -140,16 +167,22 @@ const plans: Plan[] = [
         promoNote: "First 10 months, then RM149/mth",
         promoGift: { label: "Free CCTV", unit: "1 unit included" },
         promoShort: "RM79 intro + CCTV",
-        altPromos: [{ id: "six-months-free", label: "6 Months Free", note: "First 6 months free, then RM149/mth" }],
+        promoWithBundle: null,
+        headlineBlocksBundles: true,
+        altPromos: [{
+            id: "six-months-free", label: "6 Months Free", note: "First 6 months free, then RM149/mth",
+            withBundle: { label: "3 Months Free", note: "First 3 months free, then RM{price}/mth" },
+        }],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["500Mbps / 100Mbps", "Wi-Fi 6 Combo Box", "24-hour service recovery"],
         bundles: [
-            { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 54.90, bundleTotal: "203.90", features: NETFLIX_STD_FEATURES },
+            { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 44, bundleTotal: "193", features: NETFLIX_STD_FEATURES },
+            { id: "hbo-max", label: "HBO Max Standard", logo: "M", addPrice: 24, bundleTotal: "173", features: HBO_MAX_FEATURES },
         ],
         devicePricing: {
             base: 149,
-            bundlePrices: { "netflix-std": 193 },
+            bundlePrices: { "netflix-std": 193, "hbo-max": 173 },
             addons: [
                 { id: "tv-55", label: '55" TV', addPrice: 20 },
                 { id: "tv-65-500", label: '65" TV', addPrice: 40 },
@@ -163,16 +196,19 @@ const plans: Plan[] = [
         name: "UniVerse 1Gbps",
         speed: "1", unit: "Gbps",
         price: "249", wasPrice: "289",
-        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null, altPromos: [],
+        promo: "6 Months Free", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
+        promoWithBundle: { label: "3 Months Free", note: "First 3 months free, then RM{price}/mth" },
+        headlineBlocksBundles: false, altPromos: [],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["1Gbps / 500Mbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
         bundles: [
-            { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 44.90, bundleTotal: "293.90", features: NETFLIX_STD_FEATURES },
+            { id: "netflix-std", label: "Netflix Standard", logo: "N", addPrice: 34, bundleTotal: "283", features: NETFLIX_STD_FEATURES },
+            { id: "hbo-max", label: "HBO Max Standard", logo: "M", addPrice: 14, bundleTotal: "263", features: HBO_MAX_FEATURES },
         ],
         devicePricing: {
             base: 249,
-            bundlePrices: { "netflix-std": 283 },
+            bundlePrices: { "netflix-std": 283, "hbo-max": 263 },
             addons: [
                 { id: "tv-65-1g", label: '65" TV', addPrice: 20 },
                 { id: "tv-75", label: '75" TV', addPrice: 40 },
@@ -186,7 +222,8 @@ const plans: Plan[] = [
         name: "UniVerse 2Gbps",
         speed: "2", unit: "Gbps",
         price: "319", wasPrice: null,
-        promo: "", promoPrice: null, promoNote: null, promoGift: null, promoShort: null, altPromos: [],
+        promo: "", promoPrice: null, promoNote: null, promoGift: null, promoShort: null,
+        promoWithBundle: null, headlineBlocksBundles: false, altPromos: [],
         color: PLAN_COLOR, lightBg: PLAN_LIGHT_BG, border: PLAN_BORDER,
         popular: false,
         includes: ["2Gbps / 1Gbps", "Wi-Fi 7 Combo Box", "12-hr priority service restoration"],
@@ -297,8 +334,27 @@ function PlanCard({ plan }: { plan: Plan }) {
     // Exactly one promo applies: the headline promo, an alternative promo, or a TV add-on
     const hasPromoChoice = Boolean(plan.promo && (plan.devicePricing || plan.altPromos.length));
     const promoForfeited = hasPromoChoice && (chosenDevice !== null || chosenAlt !== null);
-    const pickHeadline = () => { setSelectedDevice(null); setSelectedAlt(null); };
     const headlinePicked = !selectedDevice && !selectedAlt;
+
+    // A streaming bundle can rule the headline promo out entirely (RM59/RM79 intro rates)
+    const bundleActive = Boolean(chosen);
+    const headlineLocked = plan.headlineBlocksBundles && bundleActive;
+    const pickHeadline = () => { if (headlineLocked) return; setSelectedDevice(null); setSelectedAlt(null); };
+
+    // Adding a bundle also trims the free months on offer (6 -> 3)
+    const headlinePromo = bundleActive && plan.promoWithBundle
+        ? plan.promoWithBundle
+        : { label: plan.promo, note: plan.promoNote };
+    const activeAlt = chosenAlt && bundleActive && chosenAlt.withBundle ? chosenAlt.withBundle : chosenAlt;
+
+    const toggleBundle = (id: string) => {
+        const next = selectedBundle === id ? null : id;
+        setSelectedBundle(next);
+        // Falling back to the first alternative keeps a promo on the card
+        if (next && plan.headlineBlocksBundles && headlinePicked && plan.altPromos.length) {
+            setSelectedAlt(plan.altPromos[0].id);
+        }
+    };
 
     const deviceBase = plan.devicePricing
         ? (selectedBundle && plan.devicePricing.bundlePrices[selectedBundle]
@@ -309,7 +365,7 @@ function PlanCard({ plan }: { plan: Plan }) {
     const displayPrice = chosen ? chosen.bundleTotal : plan.price;
 
     // Intro rate applies only while the promo is the active choice
-    const introActive = Boolean(plan.promoPrice) && !promoForfeited;
+    const introActive = Boolean(plan.promoPrice) && !promoForfeited && !headlineLocked;
     const introPrice = introActive
         ? `${Number(plan.promoPrice) + (chosen?.addPrice ?? 0)}`
         : null;
@@ -317,17 +373,21 @@ function PlanCard({ plan }: { plan: Plan }) {
     const finalPrice = chosenDevice
         ? `${deviceBase + chosenDevice.addPrice}`
         : introPrice ?? displayPrice;
-    // While the intro rate shows, strike the regular rate instead of the RRP
-    const strikePrice = introPrice ? displayPrice : plan.wasPrice;
-    const priceNote = introPrice ? plan.promoNote : chosenAlt?.note ?? null;
+    // While the intro rate shows, strike the regular rate instead of the RRP.
+    // Add-ons push the price above the RRP, so there is nothing to strike then.
+    const strikePrice = introPrice
+        ? displayPrice
+        : chosen || chosenDevice ? null : plan.wasPrice;
+    const rawNote = promoForfeited ? activeAlt?.note ?? null : headlinePromo.note;
+    const priceNote = rawNote ? rawNote.replace("{price}", finalPrice) : null;
 
     const bundlePart = chosen ? ` with ${chosen.label} bundle` : "";
     const devicePart = chosenDevice
         ? ` + ${chosenDevice.label} device add-on promo (${chosenDevice.addPrice > 0 ? `+RM${chosenDevice.addPrice}/mth` : "FREE"}${promoForfeited ? `, instead of the ${plan.promo} promo` : ""}, 3-year contract, delivery 2–4 weeks after installation)`
-        : chosenAlt
-            ? ` with the ${chosenAlt.label} promo (instead of the ${plan.promoShort ?? plan.promo} promo)`
+        : activeAlt
+            ? ` with the ${activeAlt.label} promo (instead of the ${plan.promoShort ?? plan.promo} promo)`
             : plan.promo
-                ? ` with the ${plan.promo}${plan.promoGift ? ` + ${plan.promoGift.label}` : ""} promo`
+                ? ` with the ${headlinePromo.label}${plan.promoGift ? ` + ${plan.promoGift.label}` : ""} promo`
                 : "";
     const freePart = plan.freeDevice ? ` (includes FREE ${plan.freeDevice} bundle)` : "";
     const waMsg = plan.msg.replace("Can you help?", `${bundlePart}${devicePart}${freePart}. Can you help?`);
@@ -448,7 +508,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                                 transition: "all 0.2s",
                                 maxWidth: "100%", overflowWrap: "anywhere",
                             }}>
-                                {plan.promo}
+                                {headlinePromo.label}
                             </div>
                         )}
                         {plan.promoGift && (
@@ -478,14 +538,14 @@ function PlanCard({ plan }: { plan: Plan }) {
                                 }}>· {plan.promoGift.unit}</span>
                             </div>
                         )}
-                        {chosenAlt && (
+                        {activeAlt && (
                             <div style={{
                                 display: "inline-block",
                                 background: "rgba(255,122,0,0.1)", color: "var(--accent-orange)",
                                 fontFamily: "Inter, sans-serif", fontWeight: 700,
                                 fontSize: "11px", padding: "3px 10px", borderRadius: "20px",
                             }}>
-                                {chosenAlt.label}
+                                {activeAlt.label}
                             </div>
                         )}
                         {promoForfeited && chosenDevice && (
@@ -573,7 +633,9 @@ function PlanCard({ plan }: { plan: Plan }) {
                                             border: headlinePicked ? "2px solid var(--accent-orange)" : "1.5px solid #f0c8a0",
                                             borderRadius: "8px", padding: "9px 12px",
                                             background: headlinePicked ? "rgba(255,94,0,0.07)" : "white",
-                                            cursor: "pointer", transition: "all 0.2s",
+                                            cursor: headlineLocked ? "not-allowed" : "pointer",
+                                            opacity: headlineLocked ? 0.5 : 1,
+                                            transition: "all 0.2s",
                                         }}
                                     >
                                         <div style={{
@@ -590,7 +652,14 @@ function PlanCard({ plan }: { plan: Plan }) {
                                                 display: "block",
                                                 fontFamily: "Inter, sans-serif", fontWeight: 700,
                                                 fontSize: "13px", color: "#222",
-                                            }}>{plan.promo}</span>
+                                            }}>{headlinePromo.label}</span>
+                                            {headlineLocked && (
+                                                <span style={{
+                                                    display: "block",
+                                                    fontFamily: "Roboto, sans-serif", fontWeight: 400,
+                                                    fontSize: "10.5px", color: "#c0392b", marginTop: "2px",
+                                                }}>Not available with a Netflix or HBO Max bundle</span>
+                                            )}
                                             {plan.promoGift && (
                                                 <span style={{
                                                     display: "flex", alignItems: "center", gap: "4px",
@@ -614,6 +683,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                                 )}
                                 {plan.altPromos.map((a) => {
                                     const isSelected = selectedAlt === a.id;
+                                    const variant = bundleActive && a.withBundle ? a.withBundle : a;
                                     return (
                                         <div
                                             key={a.id}
@@ -640,7 +710,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                                                     display: "block",
                                                     fontFamily: "Inter, sans-serif", fontWeight: 700,
                                                     fontSize: "13px", color: "#222",
-                                                }}>{a.label}</span>
+                                                }}>{variant.label}</span>
                                                 <span style={{
                                                     display: "block",
                                                     fontFamily: "Roboto, sans-serif", fontWeight: 400,
@@ -787,7 +857,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                                     selected={selectedBundle === b.id}
                                     planColor={plan.color}
                                     lightBg={plan.lightBg}
-                                    onToggle={() => setSelectedBundle((prev) => prev === b.id ? null : b.id)}
+                                    onToggle={() => toggleBundle(b.id)}
                                 />
                             ))}
                         </div>
